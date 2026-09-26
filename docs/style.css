@@ -100,3 +100,8 @@ tr.link:hover td { background: var(--row-hover); }
 .steps > div { background: var(--q-bg); border-radius: 12px; padding: 12px 14px; border-top: 5px solid var(--lime); }
 .steps > div b { font-family: MuseoModerno, Lato, sans-serif; color: var(--accent); font-size: 17px; }
 .steps > div p { margin: 6px 0 0; line-height: 1.5; }
+
+/* Enlace al repositorio en la cabecera: píldora lima a la derecha; baja a su propia línea en pantallas angostas */
+.repo { margin-left: auto; color: var(--lime); border: 2px solid var(--lime); border-radius: 999px; padding: 3px 14px;
+  font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.repo:hover, .repo:focus-visible { background: var(--lime); color: var(--hero); }

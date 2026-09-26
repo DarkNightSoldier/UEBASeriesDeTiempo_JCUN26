@@ -739,12 +739,16 @@ TABS = [("inicio", "Inicio"), ("resumen", "Resultados"), ("laboratorio", "Labora
         ("explorador", "Explorador de usuarios"), ("triage", "Cola de revisión diaria"), ("incidentes", "Incidentes"),
         ("identificacion", "Identificación Box-Jenkins"), ("metodo", "Método, glosario y fuentes")]
 
+REPO_URL = "https://github.com/DarkNightSoldier/UEBASeriesDeTiempo_JCUN26"  # código, resultados y cómo reproducirlos
+
 app.layout = html.Div(className="page", children=[
     dcc.Location(id="url", refresh=False),
     html.Header(className="hero", children=[
         html.Div(className="hero-top", children=[html.Span("JCUN 2026", className="badge"),
                                                  html.Span("7.ª Jornada de Ciberseguridad · Universidad Nacional de Colombia",
-                                                           className="event")]),
+                                                           className="event"),
+                                                 html.A("Repositorio en GitHub ↗", href=REPO_URL, target="_blank",
+                                                        rel="noopener", className="repo")]),
         html.H1([TITLE_L1, html.Br(), html.Span(TITLE_L2, className="t2")]),
         html.P("Alejandro Higuera Castro · Departamento de Estadística, Facultad de Ciencias, Universidad Nacional de "
                "Colombia, Sede Bogotá", className="sub"),
@@ -758,7 +762,10 @@ app.layout = html.Div(className="page", children=[
     html.Footer(className="foot", children=[
         html.Span("Datos: Lindauer (2020), Insider Threat Test Dataset, Carnegie Mellon University, CC BY 4.0, "
                   "doi:10.1184/R1/12841247.v1. Los datos son sintéticos: los resultados indican viabilidad, no "
-                  "desempeño en una organización real.")]),
+                  "desempeño en una organización real."),
+        html.Span(["Código, resultados y pasos para reproducirlos: ",
+                   html.A(REPO_URL.replace("https://", ""), href=REPO_URL, target="_blank", rel="noopener")],
+                  className="foot-repo")]),
 ])
 
 

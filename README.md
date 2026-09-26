@@ -12,9 +12,11 @@
 
 > La credencial es válida. El acceso es válido. El comportamiento, no necesariamente.
 
+**Aplicación interactiva:** [ueba-jcun2026-8fd4a0983b02.herokuapp.com](https://ueba-jcun2026-8fd4a0983b02.herokuapp.com/) (el QR del póster lleva a ella).
+
 ## De qué trata
 
-Los centros de operaciones de seguridad (SOC) buscan amenazas internas con reglas de umbral y líneas base estáticas que generan tantas falsas alarmas que los analistas terminan por ignorarlas. Este trabajo trata la actividad de cada usuario como una **serie de tiempo con ciclo semanal**: cada noche, un modelo SARIMA por usuario (metodología Box-Jenkins) pronostica nueve contadores diarios (inicios de sesión, memorias USB, archivos copiados a USB, correo y navegación web), mide cuánto se aleja lo observado de lo normal para ese usuario y entrega al analista los casos más anómalos del día.
+Los centros de operaciones de seguridad (SOC) buscan amenazas internas con reglas de umbral y líneas base estáticas que generan tantas falsas alarmas que desgastan y desensibilizan a los analistas. Este trabajo trata la actividad de cada usuario como una **serie de tiempo con ciclo semanal**: cada noche, un modelo SARIMA por usuario (metodología Box-Jenkins) pronostica nueve contadores diarios (inicios de sesión, memorias USB, archivos copiados a USB, correo y navegación web), mide cuánto se aleja lo observado de lo normal para ese usuario y entrega al analista los casos más anómalos del día.
 
 Seis detectores se comparan **con el mismo número de alertas diarias**, es decir, con la misma carga de trabajo para el analista, sobre el conjunto de datos sintético CERT r4.2 (1.000 usuarios, 500 días, 32,8 millones de eventos y 70 incidentes de tres tipos: fuga de información a WikiLeaks, robo de datos antes de renunciar y sabotaje con la cuenta del supervisor).
 
@@ -139,7 +141,7 @@ python poster/build_poster.py                        # poster_A0.html y contenid
 python poster/qa_poster.py                           # desbordes, equilibrio de columnas y tamaños de letra
 chromium --headless --no-pdf-header-footer --print-to-pdf=poster/poster_A0.pdf poster/poster_A0.html
 cd paper && latexmk -pdf entrega_4_paginas.tex       # PDF de entrega: artículo + póster como página 4
-UEBA_QR_URL=https://tu-app.herokuapp.com python poster/build_poster.py   # agrega el QR cuando exista la URL
+python poster/build_poster.py   # el QR lleva a la aplicación publicada (cambiar con UEBA_QR_URL=...)
 ```
 
 El encabezado y el pie del póster salen de la plantilla oficial JCUN 2026, que no se incluye en el repositorio. En su PDF son una imagen de 150 ppp; `poster/vectorizar_plantilla.py` los reconstruye en vectores para imprimir en A0 (bandas, píldoras y líneas como formas exactas, textos como texto real con las fuentes del evento, logos trazados). Se corre una sola vez con la ruta del PDF de la plantilla y `VTRACER_PY` apuntando a un Python 3.13 con `vtracer`, porque su versión para Python 3.14 falla. El resultado (`poster/assets/encabezado.svg`, `pie.svg` y `plantilla.json`) sí está en el repositorio.

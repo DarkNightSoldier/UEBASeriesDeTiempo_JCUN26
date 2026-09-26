@@ -116,3 +116,10 @@ body { margin: 0; background: var(--fondo); color: var(--tinta); font-family: La
   .kpis { grid-template-columns: 1fr 1fr; }
   .card { padding: 14px; }
 }
+
+/* Enlace al repositorio en la cabecera: píldora lima a la derecha; baja a su propia línea en pantallas angostas */
+.repo { margin-left: auto; color: var(--lima); border: 2px solid var(--lima); border-radius: 999px; padding: 3px 14px;
+  font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.repo:hover, .repo:focus-visible { background: var(--lima); color: var(--negro); }
+.foot-repo { display: block; margin-top: 6px; }
+.foot-repo a { color: inherit; font-weight: 700; overflow-wrap: anywhere; }
