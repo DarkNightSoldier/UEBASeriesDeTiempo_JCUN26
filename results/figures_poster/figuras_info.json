@@ -1,0 +1,34 @@
+{
+  "ejemplo": {
+    "incidente": "IKR0401",
+    "escenario": 2,
+    "senal": "usb_events",
+    "modelo": "sarima",
+    "solo_temporal": true,
+    "usuario_idx": 459,
+    "dias_maliciosos": 28,
+    "solo_temporal_todos": [
+      "IKR0401",
+      "NWT0098",
+      "XHW0498"
+    ],
+    "alertas_en_figura": {
+      "user": [
+        1,
+        1
+      ],
+      "user_cola": [
+        0,
+        0
+      ],
+      "sarima": [
+        5,
+        5
+      ],
+      "sarima_cola": [
+        5,
+        5
+      ]
+    }
+  }
+}

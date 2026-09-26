@@ -1,0 +1,72 @@
+# Detección documentada como código (formato inspirado en Sigma y en el Alerting and Detection
+# Strategy de Palantir). No es una regla Sigma ejecutable: describe la analítica para que un SOC
+# pueda revisarla, versionarla y reimplementarla en su SIEM (ver kql_equivalente.md) o con este
+# repositorio (src/ueba_ts).
+
+title: Desviación del comportamiento temporal del usuario (UEBA basado en series de tiempo)
+id: ueba-ts-001
+status: experimental
+description: >
+  Cada noche, para cada usuario y cada una de nueve señales de actividad diaria, compara lo
+  observado con el pronóstico a un paso de su línea base temporal (SARIMA con ciclo semanal, o
+  SARIMAX con la mediana de sus pares de departamento como exógena). El puntaje del usuario-día
+  es la mayor desviación estandarizada hacia arriba entre las señales. El SOC investiga los k
+  usuarios con mayor puntaje cada día o los que salen del intervalo de predicción del 99 %.
+author: "Alejandro Higuera Castro, Departamento de Estadística, Facultad de Ciencias, Universidad Nacional de Colombia, Sede Bogotá"
+references:
+  - https://attack.mitre.org/techniques/T1078/
+  - https://attack.mitre.org/techniques/T1052/001/
+  - https://csrc.nist.gov/pubs/sp/800/94/final
+  - https://doi.org/10.1184/R1/12841247.v1
+tags:
+  - attack.t1078        # Valid Accounts
+  - attack.t1052.001    # Exfiltration over USB
+entity: user
+granularity: 1d
+schedule: diario, al cierre del día
+data_sources:
+  - Autenticación (Windows 4624, registros de inicio de sesión del IdP; CERT logon.csv)
+  - Dispositivos removibles (EDR; CERT device.csv)
+  - Copias de archivos a medios removibles (EDR / DLP; CERT file.csv)
+  - Correo (gateway o message trace; CERT email.csv)
+  - Proxy web (CERT http.csv)
+  - Directorio (departamento y rol: LDAP / Entra ID)
+signals:
+  - logons
+  - after_hours_logons      # fuera de 07:00 a 19:00, fines de semana y festivos
+  - unique_pcs
+  - usb_events
+  - after_hours_usb
+  - file_events
+  - emails_sent
+  - external_emails
+  - http_requests
+logic:
+  transform: "Z = log(1 + conteo diario)"
+  model: "SARIMA(0,0,0)(1,0,1)[7] (copias a USB: (0,0,1)(1,0,1)[7]), órdenes elegidos por AIC; SARIMAX añade la mediana diaria de los pares sin el propio usuario"
+  estimation: "reestimación mensual con los últimos 182 días; el filtro de Kalman actualiza el estado cada día"
+  sparse_series: "menos de 5 % de días activos: media y desviación de la ventana con piso de sigma 0,25 (detector de primera vez)"
+  score: "z_j = (Z_obs - Z_esperado) / sigma_pronóstico; A = max_j max(z_j, 0)"
+  alert_condition: "top 10 usuario-día por A cada día (presupuesto del SOC) o z_j > 2,326 (intervalo de predicción del 99 %, una cola)"
+output_fields:
+  - user
+  - day
+  - top_signal
+  - observed_value
+  - expected_value
+  - prediction_upper_99
+  - anomaly_score_A
+  - signals_outside_interval
+falsepositives:
+  - Cambios de rol o de proyecto (cambio de nivel legítimo); se absorben en la reestimación del mes siguiente.
+  - Eventos organizacionales (migraciones, cierres contables); mitigado por la exógena de pares.
+  - Regreso de vacaciones o primera vez legítima (primer uso de USB).
+  - Actividad legítima pero infrecuente no vista en la ventana (NIST SP 800-94, sección 2.3.2).
+level: medium   # señal para investigar; no bloquear automáticamente (no es un IPS)
+response:
+  - Correlacionar con EDR, NIDS, DLP e IAM del mismo usuario en los días cercanos.
+  - Revisar la señal dominante y su valor esperado; escalar si varias señales salen del intervalo el mismo día.
+known_limitations:
+  - La reestimación periódica puede aprender un ataque lento como normal (NIST SP 800-94; Chan-Tin et al., 2009).
+  - Acciones únicas sin cambio de volumen no se ven; siguen siendo trabajo de EDR y firmas.
+  - Evaluado en CERT r4.2, un conjunto sintético: requiere validación con datos reales.

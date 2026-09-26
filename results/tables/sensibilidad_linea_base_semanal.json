@@ -1,0 +1,162 @@
+{
+ "diferencias": [
+  {
+   "protocolo": "rolling",
+   "k": 3,
+   "frente_a": "user",
+   "diferencia_dias": 23,
+   "IC95_inf": 6.0,
+   "IC95_sup": 41.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 3,
+   "frente_a": "sarima",
+   "diferencia_dias": -6,
+   "IC95_inf": -21.0,
+   "IC95_sup": 8.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 5,
+   "frente_a": "user",
+   "diferencia_dias": 46,
+   "IC95_inf": 27.975,
+   "IC95_sup": 68.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 5,
+   "frente_a": "sarima",
+   "diferencia_dias": -18,
+   "IC95_inf": -42.0,
+   "IC95_sup": 4.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 10,
+   "frente_a": "user",
+   "diferencia_dias": 47,
+   "IC95_inf": 24.0,
+   "IC95_sup": 74.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 10,
+   "frente_a": "sarima",
+   "diferencia_dias": -30,
+   "IC95_inf": -61.025,
+   "IC95_sup": -3.0
+  },
+  {
+   "protocolo": "rolling",
+   "k": 20,
+   "frente_a": "user",
+   "diferencia_dias": 64,
+   "IC95_inf": 34.0,
+   "IC95_sup": 99.02499999999998
+  },
+  {
+   "protocolo": "rolling",
+   "k": 20,
+   "frente_a": "sarima",
+   "diferencia_dias": 22,
+   "IC95_inf": 1.0,
+   "IC95_sup": 46.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 3,
+   "frente_a": "user",
+   "diferencia_dias": 20,
+   "IC95_inf": 6.0,
+   "IC95_sup": 36.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 3,
+   "frente_a": "sarima",
+   "diferencia_dias": -20,
+   "IC95_inf": -43.0,
+   "IC95_sup": 2.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 5,
+   "frente_a": "user",
+   "diferencia_dias": 45,
+   "IC95_inf": 23.975,
+   "IC95_sup": 68.02499999999998
+  },
+  {
+   "protocolo": "fixed",
+   "k": 5,
+   "frente_a": "sarima",
+   "diferencia_dias": -12,
+   "IC95_inf": -41.0,
+   "IC95_sup": 14.024999999999977
+  },
+  {
+   "protocolo": "fixed",
+   "k": 10,
+   "frente_a": "user",
+   "diferencia_dias": 40,
+   "IC95_inf": 18.0,
+   "IC95_sup": 67.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 10,
+   "frente_a": "sarima",
+   "diferencia_dias": -22,
+   "IC95_inf": -60.0,
+   "IC95_sup": 9.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 20,
+   "frente_a": "user",
+   "diferencia_dias": 43,
+   "IC95_inf": 15.975000000000001,
+   "IC95_sup": 76.0
+  },
+  {
+   "protocolo": "fixed",
+   "k": 20,
+   "frente_a": "sarima",
+   "diferencia_dias": -31,
+   "IC95_inf": -67.0,
+   "IC95_sup": 3.0
+  }
+ ],
+ "resumen": {
+  "rolling": {
+   "PR_AUC_semanal": 0.03611303921945581,
+   "tasa_dias_normales_sobre_limite_por_contador": {
+    "logons": 0.0011403579816959585,
+    "after_hours_logons": 0.006450149833967765,
+    "unique_pcs": 0.0011630355551955941,
+    "usb_events": 0.002857374260954078,
+    "after_hours_usb": 0.0022418401231068274,
+    "file_events": 0.0039005426419373127,
+    "emails_sent": 0.0005896169109905241,
+    "external_emails": 0.0010010528873410545,
+    "http_requests": 0.0005993358710617964
+   }
+  },
+  "fixed": {
+   "PR_AUC_semanal": 0.0364302710541062,
+   "tasa_dias_normales_sobre_limite_por_contador": {
+    "logons": 0.0012667044626224993,
+    "after_hours_logons": 0.00626548959261359,
+    "unique_pcs": 0.0012343079290515915,
+    "usb_events": 0.0029221673280958936,
+    "after_hours_usb": 0.0022904349234631896,
+    "file_events": 0.004017170162792581,
+    "emails_sent": 0.0007386409654167004,
+    "external_emails": 0.001256985502551227,
+    "http_requests": 0.0007710374989876083
+   }
+  }
+ }
+}

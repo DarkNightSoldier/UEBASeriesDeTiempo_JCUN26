@@ -1,0 +1,240 @@
+{
+  "sarima": {
+    "logons": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "after_hours_logons": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "unique_pcs": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "usb_events": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "after_hours_usb": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "file_events": {
+      "order": [
+        0,
+        0,
+        1
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "emails_sent": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "external_emails": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    },
+    "http_requests": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        1,
+        7
+      ]
+    }
+  },
+  "arima": {
+    "logons": {
+      "order": [
+        2,
+        0,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "after_hours_logons": {
+      "order": [
+        0,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "unique_pcs": {
+      "order": [
+        2,
+        0,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "usb_events": {
+      "order": [
+        2,
+        0,
+        2
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "after_hours_usb": {
+      "order": [
+        0,
+        0,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "file_events": {
+      "order": [
+        0,
+        0,
+        2
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "emails_sent": {
+      "order": [
+        2,
+        0,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "external_emails": {
+      "order": [
+        2,
+        0,
+        2
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "http_requests": {
+      "order": [
+        2,
+        0,
+        2
+      ],
+      "seasonal_order": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  }
+}

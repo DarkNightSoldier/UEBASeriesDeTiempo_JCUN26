@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Si usas este software, cítalo así."
+title: "Detectando lo que las reglas y las líneas base no ven: UEBA basado en series de tiempo"
+authors:
+  - family-names: "Higuera Castro"
+    given-names: "Alejandro"
+    email: "ahiguerac@unal.edu.co"
+    affiliation: "Departamento de Estadística, Facultad de Ciencias, Universidad Nacional de Colombia, Sede Bogotá"
+version: 1.0.0
+date-released: 2026-09-25
+license: MIT
+keywords: [UEBA, amenaza interna, series de tiempo, SARIMA, SARIMAX, ingeniería de detección, CERT r4.2]
+references:
+  - type: dataset
+    title: "Insider Threat Test Dataset"
+    authors:
+      - family-names: Lindauer
+        given-names: Brian
+    publisher:
+      name: Carnegie Mellon University
+    doi: 10.1184/R1/12841247.v1
+    year: 2020

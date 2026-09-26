@@ -1,0 +1,74 @@
+# CERT Insider Threat Test Dataset r4.2 (CMU SEI, CC BY 4.0, DOI 10.1184/R1/12841247.v1).
+# Las rutas son relativas a la raíz del repositorio.
+raw_dir: ../Dataset1/cert-insider-threat-dataset-r4-2/r4.2
+answers_dir: ../Dataset1/cert-insider-threat-dataset-r4-2/answers
+dataset: "4.2"
+processed_dir: data/processed
+results_dir: results_smoke
+
+# Rango de días completos. El último registro de r4.2 es 2011-05-17 06:43, un día incompleto.
+start: "2010-01-02"
+end: "2011-05-16"
+
+# Jornada laboral de la organización, fijada con los datos de entrenamiento (días hábiles):
+# percentil 5 del primer logon = 07:02; mediana del último logoff = 17:44; percentil 95 = 21:12.
+# Fuera de horario = antes de work_start, desde work_end, fin de semana o festivo.
+work_start: 7
+work_end: 19
+# Festivo = día hábil con menos de holiday_ratio x (mediana de logons de días hábiles).
+holiday_ratio: 0.5
+
+# Partición cronológica. Ningún episodio del answer key empieza antes de 2010-06-10,
+# así que el entrenamiento inicial es limpio y los 70 incidentes quedan en prueba.
+train_start: "2010-01-02"
+test_start: "2010-06-10"
+
+# Protocolos de evaluación (Tashman, 2000):
+#   fixed   = origen fijo: parámetros estimados una vez con el entrenamiento inicial.
+#   rolling = origen rodante: reestimación al inicio de cada mes con los últimos
+#             rolling_window_days días (perfil regenerado periódicamente, NIST SP 800-94).
+protocols: [rolling, fixed]
+rolling_window_days: 182
+
+signals:
+  - logons
+  - after_hours_logons
+  - unique_pcs
+  - usb_events
+  - after_hours_usb
+  - file_events
+  - emails_sent
+  - external_emails
+  - http_requests
+
+detectors: [global, user, seasonal_naive, arima, sarima, sarimax]
+
+# Series con menos de esta fracción de días activos en la ventana no se modelan con ARIMA:
+# se usa la línea base estática del usuario (detector de "primera vez").
+sparse_min_active: 0.05
+# Piso de sigma en la escala log(1 + y).
+sigma_floor: 0.25
+# Regla del intervalo de predicción: alerta si z > z_{1-alpha} (una cola, solo aumentos).
+alpha: 0.01
+# Presupuesto de alertas diario del SOC: los k usuario-día con mayor puntaje.
+budget_k: 10
+
+identification:
+  sample_users: 60
+  seed: 0
+  p: [0, 1, 2]
+  q: [0, 1, 2]
+  seasonal: [[0, 0, 0], [1, 0, 0], [0, 0, 1], [1, 0, 1]]
+  period: 7
+  maxiter: 60
+
+fit:
+  maxiter: 60
+  refit_maxiter: 30
+
+bootstrap:
+  n: 50
+  seed: 0
+
+# Prueba de humo: solo verifica que el código corre de punta a punta. No son resultados.
+user_list: [AAM0658, BBS0039, FAW0032, AAF0535, OLW0689, AAE0190, ADC0391, DMM0623, DLF0377, NCH0179, CPG0322, KSH0569, OMM0944]

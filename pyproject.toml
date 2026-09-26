@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ueba-ts"
+version = "1.0.0"
+description = "UEBA basado en series de tiempo: líneas base temporales por usuario sobre CERT r4.2"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "pyarrow", "scipy", "statsmodels", "scikit-learn", "matplotlib", "pyyaml"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

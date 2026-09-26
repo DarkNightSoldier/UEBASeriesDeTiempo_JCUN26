@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UEBA temporal · JCUN 2026</title>
+<meta name="description" content="Resultados interactivos: UEBA basado en series de tiempo sobre CERT r4.2 (póster JCUN 2026).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=MuseoModerno:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <div class="hero-top"><span class="badge">JCUN 2026</span><span class="event">7.ª Jornada de Ciberseguridad · Universidad Nacional de Colombia</span></div>
+    <h1>Detectando lo que las reglas y las líneas base no ven:<br><span class="t2">UEBA basado en series de tiempo</span></h1>
+    <p class="hook">La credencial es válida. El acceso es válido. El comportamiento, no necesariamente.</p>
+    <p class="sub">Alejandro Higuera Castro · Departamento de Estadística, Facultad de Ciencias, Universidad Nacional de Colombia, Sede Bogotá</p>
+    <p class="sub">CERT Insider Threat Test Dataset r4.2 · 1.000 usuarios · 500 días · Box-Jenkins, SARIMA y SARIMAX</p>
+    <p class="sub" id="app-link"></p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" data-tab="inicio" class="sel">Inicio</button>
+    <button role="tab" data-tab="resumen">Resultados</button>
+    <button role="tab" data-tab="explorador">Explorador de usuarios</button>
+    <button role="tab" data-tab="incidentes">Incidentes</button>
+    <button role="tab" data-tab="identificacion">Identificación Box-Jenkins</button>
+    <button role="tab" data-tab="metodo">Método, glosario y fuentes</button>
+  </nav>
+
+  <main>
+    <section id="tab-inicio" class="tab-panel story">
+      <div class="card"><h3>En un minuto</h3><div id="minuto"></div></div>
+      <div class="kpis" id="kpis-inicio"></div>
+      <div class="card"><h3>¿De qué trata este trabajo?</h3>
+        <p>En una empresa, el equipo de analistas de seguridad (el SOC, centro de operaciones de seguridad) recibe alertas cuando algo se sale de lo normal. Muchas vienen de reglas con un umbral fijo, por ejemplo «más de cinco memorias USB en un día». Pero la actividad de una persona cambia con el día de la semana: un lunes no se parece a un domingo. Un umbral fijo dispara con actividad normal y deja pasar ataques que se quedan por debajo.</p>
+        <p>Aquí la actividad de cada usuario se trata como una serie de tiempo: una medición que se repite día tras día y que tiene un ritmo semanal. Con la metodología Box-Jenkins de la estadística, un modelo SARIMA aprende ese ritmo para cada persona y predice cuánto es normal para ella cada día. Si lo observado se aleja mucho de lo esperado, el sistema lo pone arriba en la lista de revisión.</p></div>
+      <div class="card"><h3>El problema: demasiado ruido</h3>
+        <p>Un analista de SOC lo resume así: “Sabemos que el 99 % de las alarmas que generamos son falsos positivos, pero aun así tenemos que revisarlas” (Alahmadi et al., USENIX Security 2022; traducción propia). Revisar tantas alarmas lleva al desgaste, y con más alertas de las que se pueden investigar se pierden ataques reales (Hassan et al., NDSS 2019).</p>
+        <p id="ruido"></p></div>
+      <div class="card"><h3>Cómo funciona (cada noche)</h3>
+        <div class="steps">
+          <div><b>1. Contar</b><p>Los registros de sesiones, memorias USB, archivos, correo y web se resumen en nueve contadores por usuario y día.</p></div>
+          <div><b>2. Pronosticar</b><p>Para cada usuario y contador, el modelo SARIMA predice el valor esperado de hoy según su historia y su ritmo semanal.</p></div>
+          <div><b>3. Medir</b><p>Para cada contador se calcula cuánto se alejó lo observado de lo esperado, en desviaciones estándar. El puntaje del usuario es su mayor exceso entre los nueve contadores.</p></div>
+          <div><b>4. Priorizar</b><p id="paso4"></p></div>
+        </div></div>
+      <div class="card"><h3>Resultado principal: con la misma carga de trabajo, las series de tiempo detectan más</h3>
+        <div id="g-budget" class="plot tall"></div>
+        <div class="guide" id="guia-budget"></div></div>
+      <div class="card"><h3>¿Qué significa y qué no?</h3><ul class="findings" id="significa"></ul></div>
+    </section>
+
+    <section id="tab-resumen" class="tab-panel" hidden>
+      <div class="kpis" id="kpis"></div>
+      <div class="card"><h3>Hallazgos principales</h3><ul id="findings" class="findings"></ul>
+        <p class="note">Cifras generadas desde las tablas del proceso reproducible (carpeta <code>src/ueba_ts</code>).</p></div>
+      <div class="grid2">
+        <div class="card"><h3>PR-AUC por detector y protocolo</h3><div id="g-prauc" class="plot"></div>
+          <div class="guide"><b>Cómo leer:</b> el PR-AUC es una nota de 0 a 1 que mide qué tan arriba quedan los días maliciosos al ordenar todos los días del más al menos sospechoso. Más a la derecha es mejor; elegir al azar da la línea punteada. Las rayas son intervalos de confianza del 95 %.</div></div>
+        <div class="card"><h3>Curvas de precisión y exhaustividad</h3>
+          <div class="controls-row"><label>Protocolo <select id="pr-proto"></select></label></div>
+          <div id="g-pr" class="plot"></div>
+          <div class="guide"><b>Cómo leer:</b> a la derecha, el detector encuentra una mayor proporción de los días maliciosos; arriba, una mayor parte de sus alertas son aciertos. Una curva más arriba y más a la derecha es mejor.</div></div>
+      </div>
+      <div class="card"><h3>Incidentes detectados por escenario</h3>
+        <div class="controls-row">
+          <label>Regla de alerta <select id="sc-rule"></select></label>
+          <label>Protocolo <select id="sc-proto"></select></label>
+        </div>
+        <div id="g-scen" class="plot"></div></div>
+      <div class="card"><h3>Todos los detectores y reglas de alerta</h3><div id="t-ablation" class="table-wrap"></div>
+        <div class="guide"><b>Cómo leer:</b> «10/día» significa que el analista revisa los 10 usuarios más anómalos cada día. «Límite 99 %» significa que se alerta cada vez que un contador supera su máximo normal esperado; «2 contadores», cuando lo superan dos a la vez. Con reglas distintas cambia el número de alertas, por eso la comparación justa es con el mismo número de alertas diarias (pestaña Inicio).</div></div>
+      <div class="card"><h3>Lo que las reglas y las líneas base no ven (mismo número de alertas)</h3><div id="t-miss" class="table-wrap"></div></div>
+      <div class="card"><h3>Alertas por día (media móvil de 7 días)</h3>
+        <div class="controls-row">
+          <label>Regla de alerta <select id="al-rule"></select></label>
+          <label>Protocolo <select id="al-proto"></select></label>
+        </div>
+        <div id="g-daily" class="plot"></div></div>
+    </section>
+
+    <section id="tab-explorador" class="tab-panel" hidden>
+      <div class="card controls-row">
+        <label>Usuario <select id="ex-user"></select></label>
+        <label>Contador <select id="ex-signal"></select></label>
+        <label>Detector <select id="ex-det"></select></label>
+      </div>
+      <div class="card"><h3 id="ex-title">Observado frente a esperado (reentrenamiento mensual, límite del 99 %)</h3><div id="g-ex" class="plot tall"></div>
+        <div class="guide"><b>Cómo leer:</b> la línea con puntos es lo que hizo el usuario cada día; la línea de color, lo que el detector esperaba; la franja, su zona normal, que llega hasta el máximo normal (límite del 99 %). Un círculo rojo marca un día que superó el límite. El ejemplo inicial (IKR0401, robo de datos antes de renunciar) es el caso de la figura 1 del póster. Las franjas grises son días maliciosos según el registro de incidentes. Esta versión incluye las cuentas con días maliciosos y 60 usuarios benignos al azar; la aplicación dinámica tiene los 1.000.</div></div>
+      <div class="card"><h3>Qué tan anómalo fue cada día, según cada detector</h3><div id="g-heat" class="plot"></div>
+        <div class="guide"><b>Cómo leer:</b> cada fila es un detector y cada columna un día. Más oscuro significa que ese día el usuario se alejó más de lo normal (puntaje: el mayor exceso entre sus nueve contadores, en desviaciones estándar). Las líneas rojas marcan días maliciosos.</div></div>
+    </section>
+
+    <section id="tab-incidentes" class="tab-panel" hidden>
+      <div class="card controls-row">
+        <label>Regla de alerta <select id="in-rule"></select></label>
+        <label>Protocolo <select id="in-proto"></select></label>
+        <label>Escenario <select id="in-scen"></select></label>
+      </div>
+      <div class="card"><h3>Los 70 incidentes del registro de incidentes</h3><p class="note" id="in-summary"></p><div id="t-inc" class="table-wrap"></div></div>
+    </section>
+
+    <section id="tab-identificacion" class="tab-panel" hidden>
+      <div class="card"><h3>Identificación en la ventana de entrenamiento</h3><div id="t-ident" class="table-wrap"></div>
+        <div class="guide"><b>Cómo leer:</b> la identificación Box-Jenkins revisa, antes de modelar, si cada serie tiene ciclo semanal (periodograma y autocorrelación de 7 días) y si es estable en el tiempo (pruebas ADF y KPSS). Si lo es, no hace falta diferenciarla.</div></div>
+      <div class="card"><h3>Órdenes elegidos por AIC</h3><div id="t-orders" class="table-wrap"></div></div>
+    </section>
+
+    <section id="tab-metodo" class="tab-panel" hidden>
+      <div class="card md" id="method"></div>
+    </section>
+  </main>
+
+  <footer class="foot">Datos: Lindauer (2020), <em>Insider Threat Test Dataset</em>, Carnegie Mellon University, CC BY 4.0, doi:10.1184/R1/12841247.v1. Los datos son sintéticos: los resultados indican viabilidad, no desempeño en una organización real.</footer>
+</div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

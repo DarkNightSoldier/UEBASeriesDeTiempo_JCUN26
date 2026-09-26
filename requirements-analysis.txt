@@ -1,0 +1,17 @@
+# Pipeline reproducible (ingesta, identificación, detectores, evaluación, figuras, exportación).
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scipy>=1.11
+statsmodels>=0.14
+scikit-learn>=1.3
+matplotlib>=3.8
+pyyaml>=6.0
+pytest>=7.0
+# Póster: encabezado y pie vectoriales a partir de la plantilla oficial (poster/vectorizar_plantilla.py).
+# vtracer se ejecuta con el Python de VTRACER_PY: su rueda para Python 3.14 falla; use un entorno con Python 3.13.
+pymupdf>=1.24
+uharfbuzz>=0.40
+fonttools>=4.50
+pillow>=10
+qrcode>=7.4

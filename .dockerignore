@@ -1,0 +1,10 @@
+.venv
+data
+results
+paper
+poster
+src
+tests
+docs
+*.pyc
+__pycache__

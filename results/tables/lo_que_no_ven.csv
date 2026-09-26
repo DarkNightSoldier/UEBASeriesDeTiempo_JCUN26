@@ -1,0 +1,9 @@
+protocolo,detector,regla,detectados,detectados_por_estaticos,solo_temporal,incidentes_solo_temporal,perdidos_vs_estaticos
+rolling,seasonal_naive,top10_dia,46,65,3,IKR0401;NWT0098;XHW0498,22
+rolling,arima,top10_dia,67,65,5,GTD0219;IKR0401;NWT0098;RMW0542;XHW0498,3
+rolling,sarima,top10_dia,67,65,3,IKR0401;NWT0098;XHW0498,1
+rolling,sarimax,top10_dia,65,65,3,IKR0401;NWT0098;XHW0498,3
+fixed,seasonal_naive,top10_dia,48,67,1,DIB0285,20
+fixed,arima,top10_dia,47,67,3,DIB0285;GTD0219;RMW0542,23
+fixed,sarima,top10_dia,63,67,2,DIB0285;RMW0542,6
+fixed,sarimax,top10_dia,57,67,1,DIB0285,11

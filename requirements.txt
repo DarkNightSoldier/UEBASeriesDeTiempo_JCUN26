@@ -1,0 +1,9 @@
+# Dependencias de la app web (Heroku, Docker). El pipeline de análisis usa requirements-analysis.txt.
+dash>=3.0
+plotly>=5.20
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scipy>=1.11
+statsmodels>=0.14
+gunicorn>=22

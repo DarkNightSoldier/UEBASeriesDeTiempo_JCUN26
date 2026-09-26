@@ -1,0 +1,7 @@
+protocol,detector,fallback_sparse,ok
+fixed,arima,3298,5702
+fixed,sarima,3298,5702
+fixed,sarimax,3298,5702
+rolling,arima,36581,61906
+rolling,sarima,36581,61906
+rolling,sarimax,36581,61906

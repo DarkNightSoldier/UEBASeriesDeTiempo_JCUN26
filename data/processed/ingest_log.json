@@ -1,0 +1,40 @@
+{
+  "filas_usuario_dia_logon": 330268,
+  "filas_usuario_dia_device": 55717,
+  "filas_usuario_dia_file": 45907,
+  "filas_usuario_dia_email": 326985,
+  "filas_usuario_dia_http": 329845,
+  "usuarios": 1000,
+  "dias": 500,
+  "usuario_dia": 500000,
+  "festivos_detectados": [
+    "2010-04-02",
+    "2010-05-31",
+    "2010-07-05",
+    "2010-09-06",
+    "2010-11-25",
+    "2010-11-26",
+    "2010-12-23",
+    "2010-12-24",
+    "2010-12-31",
+    "2011-04-22"
+  ],
+  "incidentes": 70,
+  "incidentes_por_escenario": {
+    "1": 30,
+    "2": 30,
+    "3": 10
+  },
+  "usuario_dia_maliciosos": 986,
+  "prevalencia": 0.001972,
+  "primer_dia_malicioso": "2010-06-10",
+  "usuarios_que_salen": 154,
+  "eventos_por_fuente": {
+    "logon": 854859,
+    "device": 405380,
+    "file": 445581,
+    "email": 2629979,
+    "http": 28434423
+  },
+  "eventos_total": 32770222
+}

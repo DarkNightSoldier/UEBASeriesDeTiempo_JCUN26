@@ -1,0 +1,743 @@
+<title>UEBA temporal JCUN 2026</title>
+<meta name="description" content="Resultados interactivos del póster JCUN 2026: UEBA basado en series de tiempo sobre CERT r4.2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=MuseoModerno:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Identidad visual JCUN 2026 (MuseoModerno para títulos, Lato para el cuerpo) con tema claro y oscuro.
+   Todos los colores salen de tokens; el modo oscuro solo redefine tokens. */
+:root {
+  --bg: #f3f4ef; --surface: #ffffff; --ink: #111310; --ink-2: #4f5249; --line: #e1e3da; --thead: #eef0e8;
+  --accent: #25401d; --lime: #90c048; --lime-soft: #c6da92; --red: #d91b1b;
+  --hero: #0e0e0c; --hero-ink: #ffffff; --hero-sub: #cfd2c6; --hero-hook: #c6da92;
+  --ok-bg: #e6f0d6; --ok-ink: #25401d; --row-alt: #fafaf7; --row-hover: #f0f5e6; --q-bg: #f1f6e8;
+  --s-global: #ec6a52; --s-user: #a3241f; --s-seasonal_naive: #d4a017; --s-arima: #6a5bb5; --s-sarima: #8fbf45; --s-sarimax: #2e6b25;
+  --heat-0: #f7f7f4; --heat-1: #c6da92; --heat-2: #5f8f2a; --heat-3: #25401d; --mal: rgba(140, 138, 128, 0.25);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121410; --surface: #1b1e18; --ink: #eceee6; --ink-2: #b1b5a8; --line: #2f342b; --thead: #242820;
+    --accent: #b9dc84; --lime: #90c048; --lime-soft: #3a4d25; --red: #ef5a4a;
+    --hero: #0a0b09; --hero-ink: #ffffff; --hero-sub: #b9bdb0; --hero-hook: #b9dc84;
+    --ok-bg: #26341c; --ok-ink: #cbe6a3; --row-alt: #1f231c; --row-hover: #26301e; --q-bg: #232c1b;
+    --s-global: #d9705a; --s-user: #a3372f; --s-seasonal_naive: #b3872d; --s-arima: #8d82e2; --s-sarima: #7fa12f; --s-sarimax: #1e9ab4;
+    --heat-0: #1b1e18; --heat-1: #34491f; --heat-2: #7fa12f; --heat-3: #d4ecae; --mal: rgba(185, 189, 176, 0.18);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121410; --surface: #1b1e18; --ink: #eceee6; --ink-2: #b1b5a8; --line: #2f342b; --thead: #242820;
+  --accent: #b9dc84; --lime: #90c048; --lime-soft: #3a4d25; --red: #ef5a4a;
+  --hero: #0a0b09; --hero-ink: #ffffff; --hero-sub: #b9bdb0; --hero-hook: #b9dc84;
+  --ok-bg: #26341c; --ok-ink: #cbe6a3; --row-alt: #1f231c; --row-hover: #26301e; --q-bg: #232c1b;
+  --s-global: #d9705a; --s-user: #a3372f; --s-seasonal_naive: #b3872d; --s-arima: #8d82e2; --s-sarima: #7fa12f; --s-sarimax: #1e9ab4;
+  --heat-0: #1b1e18; --heat-1: #34491f; --heat-2: #7fa12f; --heat-3: #d4ecae; --mal: rgba(185, 189, 176, 0.18);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Lato, "Segoe UI", system-ui, sans-serif; font-size: 15px; line-height: 1.45; }
+.page { max-width: 1320px; margin: 0 auto; padding-inline: 16px; padding-block: 0 32px; }
+
+.hero { background: var(--hero); color: var(--hero-ink); border-radius: 0 0 28px 28px; padding: 22px clamp(16px, 3vw, 28px) 20px; border-bottom: 6px solid var(--lime); }
+.hero-top { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.badge { background: var(--lime); color: #0e0e0c; font-family: MuseoModerno, Lato, sans-serif; font-weight: 700; padding: 2px 14px; border-radius: 999px; }
+.event { color: var(--hero-sub); font-size: 14px; }
+.hero h1 { font-family: MuseoModerno, Lato, sans-serif; font-weight: 700; font-size: clamp(22px, 3vw, 34px); line-height: 1.15; margin: 14px 0 8px; text-wrap: balance; }
+.hook { color: var(--hero-hook); font-size: 17px; margin: 0 0 4px; font-weight: 700; }
+.sub { color: var(--hero-sub); margin: 0; font-size: 14px; }
+.sub a { color: var(--lime); }
+
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 16px 0 8px; }
+.tabs button { font: 700 15px Lato, sans-serif; border: none; background: transparent; color: var(--ink-2); padding: 10px 14px; cursor: pointer; border-radius: 10px 10px 0 0; border-bottom: 4px solid transparent; }
+.tabs button:hover { color: var(--ink); }
+.tabs button:focus-visible, select:focus-visible, tr.link:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; }
+.tabs button.sel { color: var(--ink); background: var(--surface); border-bottom-color: var(--lime); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin: 12px 0; }
+.card h3 { font-family: MuseoModerno, Lato, sans-serif; font-size: 17px; margin: 0 0 10px; color: var(--accent); text-wrap: balance; }
+.note { color: var(--ink-2); font-size: 13px; margin: 6px 0; }
+.findings { padding-left: 20px; margin: 0; }
+.findings li { margin: 6px 0; line-height: 1.5; max-width: 110ch; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--lime); border-radius: 12px; padding: 12px 14px; }
+.kpi b { display: block; font-family: MuseoModerno, Lato, sans-serif; font-size: 28px; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--ink-2); font-size: 13px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 12px; }
+.grid2 > .card { margin: 0; }
+.plot { width: 100%; max-width: 100%; min-height: 360px; overflow: hidden; }
+.plot.tall { min-height: 440px; }
+.controls-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.controls-row label { display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px; min-width: 180px; flex: 1 1 180px; }
+select { font: 400 14px Lato, sans-serif; padding: 7px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--thead); border-bottom: 2px solid var(--ink); position: sticky; top: 0; }
+tr:nth-child(even) td { background: var(--row-alt); }
+td.ok { background: var(--ok-bg) !important; color: var(--ok-ink); font-weight: 700; }
+tr.link { cursor: pointer; }
+tr.link:hover td { background: var(--row-hover); }
+
+.md { line-height: 1.55; }
+.md > * { max-width: 110ch; }
+.md h2 { font-family: MuseoModerno, Lato, sans-serif; color: var(--accent); font-size: 19px; margin-top: 22px; }
+.md code { background: var(--thead); padding: 1px 5px; border-radius: 4px; }
+.md a { color: var(--accent); }
+.md table { max-width: 100%; }
+
+.foot { color: var(--ink-2); font-size: 12.5px; margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .controls-row label { min-width: 100%; } .plot { min-height: 320px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Título en dos líneas: la segunda en el color de acento, como en la plantilla del póster */
+.hero h1 .t2 { color: var(--hero-hook); }
+/* Recuadro «Cómo leer»: explica cada gráfica en lenguaje llano */
+.guide { background: var(--q-bg); border-left: 4px solid var(--lime); border-radius: 8px; padding: 10px 14px; margin: 10px 0 4px;
+  font-size: 14px; line-height: 1.55; max-width: 110ch; }
+.guide b:first-child { color: var(--accent); }
+/* Pestaña Inicio: relato guiado */
+.story p { line-height: 1.6; max-width: 95ch; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: 12px; }
+.steps > div { background: var(--q-bg); border-radius: 12px; padding: 12px 14px; border-top: 5px solid var(--lime); }
+.steps > div b { font-family: MuseoModerno, Lato, sans-serif; color: var(--accent); font-size: 17px; }
+.steps > div p { margin: 6px 0 0; line-height: 1.5; }
+
+</style>
+<div class="page">
+  <header class="hero">
+    <div class="hero-top"><span class="badge">JCUN 2026</span><span class="event">7.ª Jornada de Ciberseguridad · Universidad Nacional de Colombia</span></div>
+    <h1>Detectando lo que las reglas y las líneas base no ven:<br><span class="t2">UEBA basado en series de tiempo</span></h1>
+    <p class="hook">La credencial es válida. El acceso es válido. El comportamiento, no necesariamente.</p>
+    <p class="sub">Alejandro Higuera Castro · Departamento de Estadística, Facultad de Ciencias, Universidad Nacional de Colombia, Sede Bogotá</p>
+    <p class="sub">CERT Insider Threat Test Dataset r4.2 · 1.000 usuarios · 500 días · Box-Jenkins, SARIMA y SARIMAX</p>
+    <p class="sub" id="app-link"></p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" data-tab="inicio" class="sel">Inicio</button>
+    <button role="tab" data-tab="resumen">Resultados</button>
+    <button role="tab" data-tab="explorador">Explorador de usuarios</button>
+    <button role="tab" data-tab="incidentes">Incidentes</button>
+    <button role="tab" data-tab="identificacion">Identificación Box-Jenkins</button>
+    <button role="tab" data-tab="metodo">Método, glosario y fuentes</button>
+  </nav>
+
+  <main>
+    <section id="tab-inicio" class="tab-panel story">
+      <div class="card"><h3>En un minuto</h3><div id="minuto"></div></div>
+      <div class="kpis" id="kpis-inicio"></div>
+      <div class="card"><h3>¿De qué trata este trabajo?</h3>
+        <p>En una empresa, el equipo de analistas de seguridad (el SOC, centro de operaciones de seguridad) recibe alertas cuando algo se sale de lo normal. Muchas vienen de reglas con un umbral fijo, por ejemplo «más de cinco memorias USB en un día». Pero la actividad de una persona cambia con el día de la semana: un lunes no se parece a un domingo. Un umbral fijo dispara con actividad normal y deja pasar ataques que se quedan por debajo.</p>
+        <p>Aquí la actividad de cada usuario se trata como una serie de tiempo: una medición que se repite día tras día y que tiene un ritmo semanal. Con la metodología Box-Jenkins de la estadística, un modelo SARIMA aprende ese ritmo para cada persona y predice cuánto es normal para ella cada día. Si lo observado se aleja mucho de lo esperado, el sistema lo pone arriba en la lista de revisión.</p></div>
+      <div class="card"><h3>El problema: demasiado ruido</h3>
+        <p>Un analista de SOC lo resume así: “Sabemos que el 99 % de las alarmas que generamos son falsos positivos, pero aun así tenemos que revisarlas” (Alahmadi et al., USENIX Security 2022; traducción propia). Revisar tantas alarmas lleva al desgaste, y con más alertas de las que se pueden investigar se pierden ataques reales (Hassan et al., NDSS 2019).</p>
+        <p id="ruido"></p></div>
+      <div class="card"><h3>Cómo funciona (cada noche)</h3>
+        <div class="steps">
+          <div><b>1. Contar</b><p>Los registros de sesiones, memorias USB, archivos, correo y web se resumen en nueve contadores por usuario y día.</p></div>
+          <div><b>2. Pronosticar</b><p>Para cada usuario y contador, el modelo SARIMA predice el valor esperado de hoy según su historia y su ritmo semanal.</p></div>
+          <div><b>3. Medir</b><p>Para cada contador se calcula cuánto se alejó lo observado de lo esperado, en desviaciones estándar. El puntaje del usuario es su mayor exceso entre los nueve contadores.</p></div>
+          <div><b>4. Priorizar</b><p id="paso4"></p></div>
+        </div></div>
+      <div class="card"><h3>Resultado principal: con la misma carga de trabajo, las series de tiempo detectan más</h3>
+        <div id="g-budget" class="plot tall"></div>
+        <div class="guide" id="guia-budget"></div></div>
+      <div class="card"><h3>¿Qué significa y qué no?</h3><ul class="findings" id="significa"></ul></div>
+    </section>
+
+    <section id="tab-resumen" class="tab-panel" hidden>
+      <div class="kpis" id="kpis"></div>
+      <div class="card"><h3>Hallazgos principales</h3><ul id="findings" class="findings"></ul>
+        <p class="note">Cifras generadas desde las tablas del proceso reproducible (carpeta <code>src/ueba_ts</code>).</p></div>
+      <div class="grid2">
+        <div class="card"><h3>PR-AUC por detector y protocolo</h3><div id="g-prauc" class="plot"></div>
+          <div class="guide"><b>Cómo leer:</b> el PR-AUC es una nota de 0 a 1 que mide qué tan arriba quedan los días maliciosos al ordenar todos los días del más al menos sospechoso. Más a la derecha es mejor; elegir al azar da la línea punteada. Las rayas son intervalos de confianza del 95 %.</div></div>
+        <div class="card"><h3>Curvas de precisión y exhaustividad</h3>
+          <div class="controls-row"><label>Protocolo <select id="pr-proto"></select></label></div>
+          <div id="g-pr" class="plot"></div>
+          <div class="guide"><b>Cómo leer:</b> a la derecha, el detector encuentra una mayor proporción de los días maliciosos; arriba, una mayor parte de sus alertas son aciertos. Una curva más arriba y más a la derecha es mejor.</div></div>
+      </div>
+      <div class="card"><h3>Incidentes detectados por escenario</h3>
+        <div class="controls-row">
+          <label>Regla de alerta <select id="sc-rule"></select></label>
+          <label>Protocolo <select id="sc-proto"></select></label>
+        </div>
+        <div id="g-scen" class="plot"></div></div>
+      <div class="card"><h3>Todos los detectores y reglas de alerta</h3><div id="t-ablation" class="table-wrap"></div>
+        <div class="guide"><b>Cómo leer:</b> «10/día» significa que el analista revisa los 10 usuarios más anómalos cada día. «Límite 99 %» significa que se alerta cada vez que un contador supera su máximo normal esperado; «2 contadores», cuando lo superan dos a la vez. Con reglas distintas cambia el número de alertas, por eso la comparación justa es con el mismo número de alertas diarias (pestaña Inicio).</div></div>
+      <div class="card"><h3>Lo que las reglas y las líneas base no ven (mismo número de alertas)</h3><div id="t-miss" class="table-wrap"></div></div>
+      <div class="card"><h3>Alertas por día (media móvil de 7 días)</h3>
+        <div class="controls-row">
+          <label>Regla de alerta <select id="al-rule"></select></label>
+          <label>Protocolo <select id="al-proto"></select></label>
+        </div>
+        <div id="g-daily" class="plot"></div></div>
+    </section>
+
+    <section id="tab-explorador" class="tab-panel" hidden>
+      <div class="card controls-row">
+        <label>Usuario <select id="ex-user"></select></label>
+        <label>Contador <select id="ex-signal"></select></label>
+        <label>Detector <select id="ex-det"></select></label>
+      </div>
+      <div class="card"><h3 id="ex-title">Observado frente a esperado (reentrenamiento mensual, límite del 99 %)</h3><div id="g-ex" class="plot tall"></div>
+        <div class="guide"><b>Cómo leer:</b> la línea con puntos es lo que hizo el usuario cada día; la línea de color, lo que el detector esperaba; la franja, su zona normal, que llega hasta el máximo normal (límite del 99 %). Un círculo rojo marca un día que superó el límite. El ejemplo inicial (IKR0401, robo de datos antes de renunciar) es el caso de la figura 1 del póster. Las franjas grises son días maliciosos según el registro de incidentes. Esta versión incluye las cuentas con días maliciosos y 60 usuarios benignos al azar; la aplicación dinámica tiene los 1.000.</div></div>
+      <div class="card"><h3>Qué tan anómalo fue cada día, según cada detector</h3><div id="g-heat" class="plot"></div>
+        <div class="guide"><b>Cómo leer:</b> cada fila es un detector y cada columna un día. Más oscuro significa que ese día el usuario se alejó más de lo normal (puntaje: el mayor exceso entre sus nueve contadores, en desviaciones estándar). Las líneas rojas marcan días maliciosos.</div></div>
+    </section>
+
+    <section id="tab-incidentes" class="tab-panel" hidden>
+      <div class="card controls-row">
+        <label>Regla de alerta <select id="in-rule"></select></label>
+        <label>Protocolo <select id="in-proto"></select></label>
+        <label>Escenario <select id="in-scen"></select></label>
+      </div>
+      <div class="card"><h3>Los 70 incidentes del registro de incidentes</h3><p class="note" id="in-summary"></p><div id="t-inc" class="table-wrap"></div></div>
+    </section>
+
+    <section id="tab-identificacion" class="tab-panel" hidden>
+      <div class="card"><h3>Identificación en la ventana de entrenamiento</h3><div id="t-ident" class="table-wrap"></div>
+        <div class="guide"><b>Cómo leer:</b> la identificación Box-Jenkins revisa, antes de modelar, si cada serie tiene ciclo semanal (periodograma y autocorrelación de 7 días) y si es estable en el tiempo (pruebas ADF y KPSS). Si lo es, no hace falta diferenciarla.</div></div>
+      <div class="card"><h3>Órdenes elegidos por AIC</h3><div id="t-orders" class="table-wrap"></div></div>
+    </section>
+
+    <section id="tab-metodo" class="tab-panel" hidden>
+      <div class="card md" id="method"></div>
+    </section>
+  </main>
+
+  <footer class="foot">Datos: Lindauer (2020), <em>Insider Threat Test Dataset</em>, Carnegie Mellon University, CC BY 4.0, doi:10.1184/R1/12841247.v1. Los datos son sintéticos: los resultados indican viabilidad, no desempeño en una organización real.</footer>
+</div>
+<script type="text/markdown" id="metodo-md">
+## Glosario
+
+| Término | Qué significa en este trabajo |
+|---|---|
+| Amenaza interna | Daño que causa alguien con acceso legítimo a la organización, como un empleado que roba información o sabotea sistemas. |
+| UEBA | Análisis del comportamiento de usuarios y entidades: aprende cómo se comporta normalmente cada usuario y avisa cuando se aparta de ese patrón. |
+| Serie de tiempo | Un dato medido día tras día, por ejemplo cuántas memorias USB conecta un usuario cada día. Lo de hoy suele parecerse a lo de días anteriores y depende del día de la semana. |
+| Ciclo semanal | El ritmo que se repite cada 7 días: mucha actividad entre semana, casi nada el fin de semana. |
+| Regla global | El mismo umbral para todos los usuarios de la organización, como muchas reglas de los sistemas de alertas. |
+| Línea base estática | El promedio y la variación de la historia de cada usuario, recalculados cada mes. Usa el mismo límite un lunes que un domingo. |
+| Regla ingenua | Espera hoy lo mismo que pasó el mismo día de la semana anterior. Tiene en cuenta el ciclo semanal, pero sin un modelo. |
+| ARIMA | Modelo estadístico de pronóstico que estima el valor de hoy con lo ocurrido en los días inmediatamente anteriores. Aprende, por ejemplo, que tras un día muy activo suele venir otro parecido. No distingue el día de la semana. |
+| SARIMA | Versión estacional de ARIMA. Aquí pronostica cada día con el promedio del mismo día de la semana en semanas anteriores; por eso espera más actividad un lunes que un domingo. |
+| SARIMAX + pares | SARIMA que además tiene en cuenta cuánta actividad hubo ese día en el departamento del usuario. Si todo el departamento trabaja más un día, no alerta solo por eso. |
+| Box-Jenkins | La receta estadística para construir estos modelos: identificar el patrón de la serie, estimar el modelo, comprobar que no quede patrón sin explicar y pronosticar. |
+| Límite del 99 % | El valor que, según la historia de ese usuario, un día normal no debería superar más de 1 vez de cada 100 en ese contador. Superarlo es inusual. |
+| Alerta | Aviso de que un usuario se alejó de lo normal. Es una señal para investigar, no un ataque confirmado. |
+| Falsa alarma | Alerta sobre un día que no era malicioso. |
+| Cola de revisión | Los usuarios más anómalos de cada día, en el orden en que el analista los revisa. |
+| Día malicioso | Un día en que el usuario hizo parte de un incidente, según el registro de incidentes del conjunto de datos. |
+| PR-AUC | Nota de 0 a 1 que mide qué tan arriba quedan los días maliciosos al ordenar todos los días de la prueba juntos, del más al menos sospechoso. 1 es perfecto; elegir al azar da 0,0032. |
+| Intervalo de confianza del 95 % | Se obtiene repitiendo el cálculo 1.000 veces con usuarios elegidos al azar (remuestreo bootstrap) y tomando el rango donde cae el 95 % de los resultados. Si no incluye el cero, la diferencia no depende de qué usuarios hay en los datos. |
+| Prueba de Ljung-Box | Revisa si en los errores del pronóstico queda un patrón. Si todos los modelos fueran adecuados, cerca del 95 % de los ajustes no mostraría patrón; no encontrarlo no prueba que el modelo sea perfecto, pero encontrarlo indica que le faltó capturar parte del ritmo. |
+| Usuario-día | Un usuario en un día concreto; es la unidad que se evalúa (309.661 en el periodo de prueba). |
+| Puntaje | Cuántas desviaciones estándar se alejó lo observado de lo esperado en el contador más alterado del usuario ese día; con él se ordena la cola de revisión. |
+| Reentrenamiento mensual | Cada mes los modelos se vuelven a estimar con los últimos 182 días. |
+| Sin reentrenar (origen fijo) | Los modelos se estiman una sola vez, con los días anteriores al 10 de junio de 2010. |
+| FAC | Función de autocorrelación: cuánto se parece la actividad de un día a la de k días antes. |
+| FACP | Autocorrelación parcial: lo mismo que la FAC, pero descontando los días intermedios. |
+| Periodograma | Separa la serie en ritmos; un pico en 7 días indica un ciclo semanal. |
+| ADF y KPSS | Pruebas que dicen si el nivel de la serie es estable o se desplaza con el tiempo. |
+| AIC | Criterio para elegir entre modelos: premia el buen ajuste y castiga la complejidad. |
+| MAE y RMSE | Error promedio del pronóstico; el RMSE castiga más los errores grandes. |
+| EDR | Protección de equipos que vigila acciones sospechosas en cada computador. |
+
+## El problema
+
+Las firmas detectan bien las amenazas conocidas, pero en gran medida no las desconocidas (NIST SP 800-94). En la amenaza interna y en el abuso de cuentas válidas (MITRE ATT&CK T1078) cada acción es legítima: lo anómalo es el patrón. Para buscarlo, los centros de operaciones de seguridad (SOC) usan reglas de umbral y líneas base de comportamiento, pero un umbral fijo trata igual un lunes que un domingo y genera ruido. Un analista de SOC lo resume así: «Sabemos que el 99 % de las alarmas que generamos son falsos positivos, pero aun así tenemos que revisarlas» (Alahmadi et al., 2022; traducción propia). Revisar tantas alarmas lleva al desgaste y a la desensibilización, y con más alertas de las que se pueden investigar se pierden ataques reales (Hassan et al., 2019). Y el problema es costoso: atender incidentes internos (descuidos de empleados, empleados maliciosos y robo de credenciales) le cuesta a cada organización USD 19,5 millones al año en promedio, según un estudio de 354 organizaciones (Ponemon Institute, 2026).
+
+La actividad de un usuario, como el tráfico de red (Brutlag, 2000; Rajchel et al., 2020), es una serie de tiempo con ciclos diarios y semanales. Por eso la línea base debería ser un modelo de series de tiempo.
+
+## Pregunta
+
+Con el mismo número de alertas diarias, es decir, con la misma carga de trabajo para el analista, ¿un modelo de series de tiempo por usuario detecta más actividad maliciosa que una regla global y que una línea base estática?
+
+## Datos
+
+CERT Insider Threat Test Dataset, versión r4.2 (Lindauer, 2020; Glasser y Lindauer, 2013). Es un conjunto sintético de 1.000 usuarios de una organización ficticia, con registros de inicios de sesión, memorias USB, archivos copiados a USB, correo, navegación web y directorio, del 2 de enero de 2010 al 16 de mayo de 2011 (500 días). Su registro de incidentes describe 70 casos de tres escenarios:
+
+| Escenario | Casos | Qué hace el empleado malicioso |
+|---|---|---|
+| 1 | 30 | Empieza a entrar fuera de horario, usa memorias USB por primera vez y sube datos a wikileaks.org |
+| 2 | 30 | Busca empleo en la competencia y copia datos a memorias USB mucho más que antes de renunciar |
+| 3 | 10 | Un administrador instala un programa espía en el equipo de su supervisor y envía un correo masivo con la cuenta del supervisor |
+
+Un usuario-día es malicioso si el registro de incidentes tiene un evento de ese usuario ese día; en el escenario 3 esto incluye la cuenta del supervisor, desde la que sale el correo masivo.
+
+## Cómo funciona (cada noche)
+
+1. **Contar.** Los registros se resumen en nueve contadores por usuario y día: inicios de sesión, inicios de sesión fuera de horario, equipos distintos usados, memorias USB conectadas, memorias USB conectadas fuera de horario, archivos copiados a USB, correos enviados, correos a destinatarios externos y páginas web visitadas. La jornada de 07:00 a 19:00 salió de los datos de entrenamiento: el 5 % de los días el primer inicio de sesión es antes de las 07:02, y la mediana del último cierre de sesión es 17:44. Fines de semana y festivos (días hábiles con menos de la mitad de los inicios de sesión habituales) cuentan como fuera de horario. Los modelos trabajan con log(1 + conteo).
+2. **Pronosticar.** Para cada usuario y contador, un modelo SARIMA predice el valor esperado del día y su límite del 99 %.
+3. **Comparar.** Para cada contador se mide cuántas desviaciones estándar se aleja lo observado de lo esperado (z). Solo cuentan los aumentos, y el puntaje del usuario es el mayor de sus nueve excesos (A = máximo de z⁺).
+4. **Priorizar.** El analista revisa los k usuarios con mayor puntaje del día.
+
+## Identificación Box-Jenkins
+
+En la ventana de entrenamiento se analizaron las 9.000 series (1.000 usuarios por 9 contadores) con la función de autocorrelación (FAC), la autocorrelación parcial (FACP), el periodograma y las pruebas de estacionariedad ADF, aplicada a la serie sin el patrón semanal (Dickey y Fuller, 1979), y KPSS (Kwiatkowski et al., 1992). De las 5.700 series con al menos 5 % de días con actividad, el 94 % tiene ciclo semanal y en el 96 % ADF (sin el promedio de cada día de la semana) y KPSS son compatibles con un nivel estable, así que no hace falta diferenciarlas. ADF se aplica a la serie sin el patrón semanal porque ese patrón, que se repite siempre igual, le quita potencia a la prueba; sobre la serie original rechaza la raíz unitaria solo en el 35,5 %. Con 5.700 pruebas no se corrigió por comparaciones múltiples: los porcentajes son descriptivos. Los órdenes se eligieron por la menor mediana de diferencia de AIC en una muestra aleatoria de 60 usuarios: SARIMA(0,0,0)(1,0,1) con periodo 7 en ocho de los nueve contadores (en archivos copiados a USB, con un término MA(1)). Los coeficientes estimados (mediana de Φ = 0,997 y de Θ = -1,00) hacen que SARIMA aprenda, en la práctica, un perfil por día de la semana que se actualiza lentamente. Los residuos se validan con la prueba de Ljung-Box (rezago 14; Ljung y Box, 1978).
+
+Las series con menos de 5 % de días con actividad (por ejemplo, memorias USB en quien nunca las usa) no se modelan con ARIMA: usan la línea base estática con una desviación mínima de 0,25, que funciona como detector de primera vez.
+
+## Detectores comparados
+
+| Detector | Equivale en un SOC a | Qué aporta |
+|---|---|---|
+| Regla global | «conteo mayor que K» para toda la organización | punto de partida |
+| Línea base estática | media y desviación de la historia del usuario | personalizar por usuario |
+| Regla ingenua | «hoy como el mismo día de la semana pasada» | ciclo semanal sin modelo |
+| ARIMA | pronóstico con los días recientes | dependencia de un día al siguiente |
+| SARIMA | pronóstico con el mismo día de semanas anteriores | ciclo semanal modelado |
+| SARIMAX + pares | SARIMA con la mediana diaria de su departamento, sin el propio usuario | contexto de la organización |
+
+## Evaluación
+
+La partición es cronológica. Ningún incidente empieza antes del 10 de junio de 2010, así que el entrenamiento inicial (2 de enero a 9 de junio de 2010) no contiene ataques y los 70 incidentes quedan en la prueba (10 de junio de 2010 a 16 de mayo de 2011).
+
+* **Reentrenamiento mensual (principal).** Al inicio de cada mes se reestiman los parámetros con los últimos 182 días (origen rodante; Tashman, 2000), como un perfil que se regenera periódicamente (NIST SP 800-94, sección 2.3.2). No usa el registro de incidentes: si hubo actividad maliciosa en la ventana, entra a la línea base, como pasaría en un SOC real.
+* **Sin reentrenar (origen fijo, prueba de sensibilidad).** Los parámetros se estiman una sola vez con el entrenamiento inicial, como en BRITD (Song et al., 2024); el filtro de Kalman actualiza el pronóstico día a día.
+
+NIST describe el dilema: un perfil estático «con el tiempo se vuelve impreciso», mientras que uno dinámico es «susceptible a intentos de evasión» si el atacante aumenta su actividad poco a poco (traducción propia). Comparar ambos protocolos mide ese intercambio.
+
+La comparación principal usa el mismo número de alertas diarias, de 1 a 30: cuántos días maliciosos e incidentes encuentra cada detector. También se reporta el PR-AUC, adecuado cuando los casos positivos son muy pocos (Saito y Rehmsmeier, 2015), la proporción de días maliciosos detectados, las falsas alarmas por cada 1.000 usuario-día y la demora hasta la primera alerta. Los intervalos de confianza vienen de un remuestreo bootstrap por usuarios (1.000 repeticiones). Solo se evalúan los usuario-día activos, es decir, hasta el último inicio de sesión de cada usuario.
+
+## Resultados principales
+
+* **47 % más con el mismo trabajo.** Revisando 10 alertas al día, SARIMA encuentra 240 días de actividad maliciosa; la línea base estática, 163, y la regla global, 36. No depende de unos pocos usuarios: al remuestrearlos 1.000 veces, la ventaja de SARIMA quedó entre 43 y 117 días en el 95 % de los casos.
+* **Siempre por encima.** Los tres modelos de series de tiempo encuentran más días maliciosos que la línea base estática con cualquier número de alertas diarias entre 1 y 30.
+* **Más aciertos por alerta.** Para dar con un día malicioso, el analista revisa 14 alertas con SARIMA, 21 con la línea base estática y 95 con la regla global.
+* **La línea base estática exige casi el doble.** Necesita 18 alertas diarias para encontrar lo que SARIMA encuentra con 10.
+* **Un umbral fijo satura.** Si cada detector usa su propio límite del 99 %, sin tope diario, la regla global dispara 108 alertas al día (98 de cada 100 falsas) y SARIMA, 18,5 (95 de cada 100). La regla encuentra así más días maliciosos (594 frente a 304), pero con casi seis veces más alertas: por eso se compara con la misma carga.
+* **El ritmo semanal da estabilidad.** Sin reentrenar, SARIMA mantiene 233 días maliciosos con 10 alertas diarias y ARIMA, que ignora el día de la semana, cae a 123 (la línea base estática, 171).
+* **Lo que no favorece al modelo, también se reporta.** Sin reentrenar (origen fijo), SARIMA sigue encontrando más días maliciosos que la línea base estática en los 30 casos, pero en incidentes, con 6 a 11 alertas diarias, la línea base estática detecta más.
+
+## Robustez
+
+* **Convergencia de SARIMAX.** Con el límite de 60 iteraciones (30 en los reajustes que parten de la estimación anterior), statsmodels marcó como convergidos el 96 % de los ajustes SARIMA y cerca del 60 % de los SARIMAX. Al reestimar SARIMAX con hasta 300 y 150 iteraciones en 40 usuarios al azar (66.598 usuario-día-contador con reentrenamiento mensual), el percentil 99 del cambio en z fue 0,05 y cambió el 0,012 % de las decisiones de alerta del límite del 99 %. Ver `scripts/sensibilidad_convergencia.py`.
+* **Validación Box-Jenkins.** La prueba de Ljung-Box no encuentra patrón en los errores del 82 % de los ajustes SARIMA con reentrenamiento mensual (si todos fueran adecuados se esperaría cerca del 95 %) y solo del 9 % de los ARIMA: sin el término semanal, el ciclo queda en los errores.
+* **Calibración del límite.** En los días normales de la prueba, lo observado superó el límite del 99 % de SARIMA entre el 0,17 % y el 0,79 % de las veces según el contador (el valor nominal es 1 %): el límite es conservador. Como el puntaje toma el peor de nueve contadores, el 1,9 % de los usuario-día normales supera algún límite.
+* **ARIMA.** Con reentrenamiento mensual su PR-AUC puntual (0,0346) es el más alto, pero la diferencia con SARIMA no es significativa (intervalo de confianza del 95 %: de -0,0029 a 0,0075) y sin reentrenar cae a 0,0204.
+
+## Limitaciones
+
+CERT es sintético: los resultados indican viabilidad, no desempeño en una organización real. Una anomalía es una desviación improbable que merece investigación, no un ataque confirmado. El conteo diario no ve una acción única sin cambio de volumen, ni lo que ya es costumbre para un usuario (por ejemplo, un robo con memorias USB fuera de horario en alguien que ya las conectaba así casi todos los días; la regla global sí lo detecta); eso sigue siendo tarea de la regla global, la protección de equipos (EDR) y las firmas. La línea base se reentrena sin usar etiquetas, así que un ataque largo puede entrar en ella.
+
+## Fuentes
+
+* Scarfone, K., Mell, P. (2007). *Guide to Intrusion Detection and Prevention Systems (IDPS)*. NIST SP 800-94. [csrc.nist.gov](https://csrc.nist.gov/pubs/sp/800/94/final)
+* Alahmadi, B. A., Axon, L., Martinovic, I. (2022). 99% False Positives: A Qualitative Study of SOC Analysts' Perspectives on Security Alarms. *31st USENIX Security Symposium*, 2783-2800. [usenix.org](https://www.usenix.org/conference/usenixsecurity22/presentation/alahmadi)
+* Hassan, W. U., Guo, S., Li, D., Chen, Z., Jee, K., Li, Z., Bates, A. (2019). NoDoze: Combatting Threat Alert Fatigue with Automated Provenance Triage. *NDSS*. [doi:10.14722/ndss.2019.23349](https://doi.org/10.14722/ndss.2019.23349)
+* Brutlag, J. D. (2000). Aberrant Behavior Detection in Time Series for Network Monitoring. *USENIX LISA 2000*, 139-146. [usenix.org](https://www.usenix.org/conference/lisa-2000/aberrant-behavior-detection-time-series-network-service-monitoring)
+* Lindauer, B. (2020). *Insider Threat Test Dataset*. Carnegie Mellon University. [doi:10.1184/R1/12841247.v1](https://doi.org/10.1184/R1/12841247.v1)
+* Glasser, J., Lindauer, B. (2013). Bridging the Gap: A Pragmatic Approach to Generating Insider Threat Data. *IEEE Security and Privacy Workshops*, 98-104. [doi:10.1109/SPW.2013.37](https://doi.org/10.1109/SPW.2013.37)
+* Song, S., Gao, N., Zhang, Y., Ma, C. (2024). BRITD: behavior rhythm insider threat detection with time awareness and user adaptation. *Cybersecurity*, 7, 2. [doi:10.1186/s42400-023-00190-9](https://doi.org/10.1186/s42400-023-00190-9)
+* Zhang, C., Yang, G., Tian, T., Jiang, B., Lu, Z., Guo, T. (2026). BTITD: an insider threat detection method based on behavior-timestamp dual-stream network. *Cybersecurity*, 9, 179. [doi:10.1186/s42400-026-00591-6](https://doi.org/10.1186/s42400-026-00591-6)
+* Rajchel, B., Monaco, J. V., Singh, G., Hu, A., Shingleton, J., Anderson, T. (2020). Temporal Behavior in Network Traffic as a Basis for Insider Threat Detection. *IEEE SSCI*, 1427-1434. [doi:10.1109/SSCI47803.2020.9308236](https://doi.org/10.1109/SSCI47803.2020.9308236)
+* Tashman, L. J. (2000). Out-of-sample tests of forecasting accuracy: an analysis and review. *International Journal of Forecasting*, 16(4), 437-450. [doi:10.1016/S0169-2070(00)00065-0](https://doi.org/10.1016/S0169-2070(00)00065-0)
+* Saito, T., Rehmsmeier, M. (2015). The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets. *PLOS ONE*, 10(3), e0118432. [doi:10.1371/journal.pone.0118432](https://doi.org/10.1371/journal.pone.0118432)
+* Ljung, G. M., Box, G. E. P. (1978). On a measure of lack of fit in time series models. *Biometrika*, 65(2), 297-303. [doi:10.1093/biomet/65.2.297](https://doi.org/10.1093/biomet/65.2.297)
+* Dickey, D. A., Fuller, W. A. (1979). Distribution of the Estimators for Autoregressive Time Series with a Unit Root. *JASA*, 74(366a), 427-431. [doi:10.1080/01621459.1979.10482531](https://doi.org/10.1080/01621459.1979.10482531)
+* Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root. *Journal of Econometrics*, 54(1-3), 159-178. [doi:10.1016/0304-4076(92)90104-Y](https://doi.org/10.1016/0304-4076(92)90104-Y)
+* Seabold, S., Perktold, J. (2010). Statsmodels: Econometric and Statistical Modeling with Python. *9th Python in Science Conference*, 92-96. [doi:10.25080/Majora-92bf1922-011](https://doi.org/10.25080/Majora-92bf1922-011)
+* Microsoft (2025). Advanced threat detection with User and Entity Behavior Analytics (UEBA) in Microsoft Sentinel. [learn.microsoft.com](https://learn.microsoft.com/en-us/azure/sentinel/identify-threats-with-entity-behavior-analytics)
+* MITRE ATT&CK. T1078 Valid Accounts y T1052.001 Exfiltration over USB. [attack.mitre.org](https://attack.mitre.org/techniques/T1078/)
+* Ponemon Institute (2026). *2026 Cost of Insider Risks: Global Report* (patrocinado por DTEX). [ponemonsullivanreport.com](https://ponemonsullivanreport.com/2026/05/2026-cost-of-insider-risks-global/)
+
+## Datos
+
+CERT Insider Threat Test Dataset (Lindauer, 2020), Carnegie Mellon University, licencia CC BY 4.0. Disponible en [kilthub.cmu.edu](https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247) ([doi:10.1184/R1/12841247](https://doi.org/10.1184/R1/12841247)).
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>
+window.UEBA_DYNAMIC_APP_URL = "";
+// Sitio estático de resultados (GitHub Pages y Artifact). Lee data/summary.json y data/users/<usuario>.json.
+// Ningún número está escrito a mano: todo sale de las tablas exportadas por el pipeline.
+// Los colores salen de los tokens CSS (style.css), así los gráficos siguen el tema claro u oscuro.
+"use strict";
+
+const DET = ["global", "user", "seasonal_naive", "arima", "sarima", "sarimax"];
+const NAMES = { global: "Regla global", user: "Línea base estática", seasonal_naive: "Regla ingenua (semana anterior)",
+  arima: "ARIMA", sarima: "SARIMA", sarimax: "SARIMAX + pares" };
+// Paletas JCUN validadas para daltonismo en este orden (skill dataviz), una para cada tema: ver style.css.
+const COL = {};
+const PROTO = { rolling: "Reentrenamiento mensual", fixed: "Sin reentrenar (origen fijo)" };
+const SIG = { logons: "Inicios de sesión", after_hours_logons: "Inicios de sesión fuera de horario", unique_pcs: "Equipos distintos usados",
+  usb_events: "Posible fuga por USB (memorias conectadas)", after_hours_usb: "Posible fuga por USB fuera de horario",
+  file_events: "Posible robo de información (archivos copiados a USB)", emails_sent: "Correos enviados",
+  external_emails: "Posible fuga por correo (destinatarios externos)", http_requests: "Páginas web visitadas" };
+const SCEN = { 1: "Fuga de información a WikiLeaks, fuera de horario", 2: "Robo de datos antes de renunciar",
+  3: "Sabotaje con la cuenta del supervisor" };
+let INK, INK2, GRID, SURF, RED, MAL, HEAT;
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function readTheme() {
+  for (const d of DET) COL[d] = css(`--s-${d}`);
+  INK = css("--ink"); INK2 = css("--ink-2"); GRID = css("--line"); SURF = css("--surface");
+  RED = css("--red"); MAL = css("--mal"); HEAT = ["--heat-0", "--heat-1", "--heat-2", "--heat-3"].map(css);
+}
+const Z99 = 2.3263478740408408;
+
+let S = null, UIDX = null;
+const $ = (id) => document.getElementById(id);
+const nf = (x, d = 3) => (x === null || x === undefined || Number.isNaN(x)) ? "n. d." :
+  Number(x).toLocaleString("es-CO", { minimumFractionDigits: d, maximumFractionDigits: d });
+const pc = (x, d = 1) => nf(100 * x, d) + " %";
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function layout(extra = {}) {
+  // Los ejes se combinan (no se reemplazan) para conservar zeroline, colores y cuadrícula del tema.
+  const axis = { gridcolor: GRID, linecolor: INK2, zeroline: false };
+  const x = Object.assign({}, axis, extra.xaxis || {}), y = Object.assign({}, axis, extra.yaxis || {});
+  extra = Object.assign({}, extra, { xaxis: x, yaxis: y });
+  return Object.assign({
+    font: { family: "Lato, sans-serif", size: 13, color: INK }, paper_bgcolor: SURF, plot_bgcolor: SURF,
+    margin: { l: 60, r: 16, t: 56, b: 50 }, hoverlabel: { font: { family: "Lato" } }, colorway: DET.map((d) => COL[d]),
+    xaxis: { gridcolor: GRID, linecolor: INK2, zeroline: false }, yaxis: { gridcolor: GRID, linecolor: INK2, zeroline: false },
+    legend: { orientation: "h", y: 1.02, yanchor: "bottom", x: 0 }, separators: ",.",
+  }, extra);
+}
+const CFG = { displaylogo: false, responsive: true };
+
+function fillSelect(el, opts, value) {
+  el.innerHTML = opts.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  if (value !== undefined) el.value = value;
+}
+
+function tableHTML(rows, cols, opts = {}) {
+  const head = "<tr>" + cols.map((c) => `<th>${esc(c.label)}</th>`).join("") + "</tr>";
+  const body = rows.map((r, i) => {
+    const cls = opts.rowClass ? opts.rowClass(r) : "";
+    const data = opts.rowData ? ` data-key="${esc(opts.rowData(r))}"` : "";
+    const focus = cls === "link" ? ' tabindex="0"' : "";
+    return `<tr class="${cls}"${data}${focus}>` + cols.map((c) => {
+      const v = c.fmt ? c.fmt(r[c.key], r) : r[c.key];
+      const tdc = c.cls ? c.cls(r[c.key], r) : "";
+      return `<td class="${tdc}">${v === undefined ? "" : v}</td>`;
+    }).join("") + "</tr>";
+  }).join("");
+  return `<table>${head}${body}</table>`;
+}
+
+// ------------------------------------------------------------------ inicio (relato guiado)
+// Misma lectura que la pestaña Inicio de la app dinámica: todo con el mismo número de alertas diarias.
+function budgetNumbers() {
+  const k = S.meta.budget_k, c = S.presupuesto_alertas.filter((r) => r.protocolo === "rolling");
+  const at = (d, kk, col) => c.find((r) => r.detector === d && r.k === kk)[col];
+  const tp = {}, inc = {};
+  for (const d of DET) { tp[d] = at(d, k, "dias_maliciosos_detectados"); inc[d] = at(d, k, "incidentes_detectados"); }
+  const u = c.filter((r) => r.detector === "user").sort((a, b) => a.k - b.k);
+  const kEq = (u.find((r) => r.dias_maliciosos_detectados >= tp.sarima) || { k: NaN }).k;
+  const ratio = kEq / k;
+  const esfuerzo = ratio >= 1.7 && ratio < 2 ? "casi el doble" : (ratio >= 2 ? "el doble o más" : "más trabajo");
+  const dif = S.presupuesto_diferencias.find((r) => r.protocolo === "rolling" && r.detector === "sarima" && r.k === k);
+  const s = resRow("rolling", "sarima"), nMal = Math.round(s[`top${k}_dia_TP`] / s[`top${k}_dia_recall`]);
+  return { k, tp, inc, alerts: at("sarima", k, "alertas"), kEq, esfuerzo, dif, nMal };
+}
+
+function renderInicio() {
+  const B = budgetNumbers(), N = S.ingesta.incidentes, g = resRow("rolling", "global");
+  $("ruido").innerHTML = `En estos datos, una regla global con umbral del 99 % dispara <b>${nf(g.IP99_R1_alertas_por_dia, 0)} alertas por día</b>, y ${nf(100 * (1 - g.IP99_R1_precision), 0)} de cada 100 son falsas.`;
+  $("paso4").textContent = `Cada mañana, los ${B.k} usuarios con mayor puntaje van a la cola de revisión del SOC. Como referencia, un exceso de más de 2,33 desviaciones estándar supera el límite del 99 %: el valor que un día normal de esa persona no debería superar más de 1 vez de cada 100.`;
+  $("minuto").innerHTML = `<p><b>El problema.</b> Las reglas de umbral fijo de un SOC generan tanto ruido que los ataques internos se pierden en él. En estos datos, una regla global con límite del 99 % dispara ${nf(g.IP99_R1_alertas_por_dia, 0)} alertas al día, y ${nf(100 * (1 - g.IP99_R1_precision), 0)} de cada 100 son falsas.</p>
+    <p><b>Lo que se hizo.</b> Para cada uno de los 1.000 usuarios y cada uno de sus 9 contadores diarios (sesiones, memorias USB, archivos, correo y web), un modelo SARIMA aprende su ritmo semanal y pronostica cuánto es normal cada día. Cada mañana, el SOC revisa a los ${B.k} usuarios que más se alejaron de su pronóstico.</p>
+    <p><b>Lo que se encontró.</b> Con esas mismas ${B.k} alertas diarias, SARIMA encuentra ${B.tp.sarima} días maliciosos; la línea base estática, ${B.tp.user}, y la regla global, ${B.tp.global}. SARIMA detecta ${B.inc.sarima} de los ${N} incidentes.</p>
+    <p><b>El límite.</b> Los datos (CERT r4.2) son sintéticos: el trabajo muestra que el método es viable, no cómo rinde en una organización real.</p>`;
+  $("kpis-inicio").innerHTML = [
+    ["+" + pc(B.dif.mejora_relativa, 0), `días maliciosos detectados frente a la línea base estática (${B.tp.sarima} frente a ${B.tp.user}, con las mismas ${B.k} alertas diarias)`],
+    [`${nf(B.tp.sarima / B.tp.global, 1)} veces`, `los días maliciosos de la regla global (${B.tp.sarima} frente a ${B.tp.global}, mismas alertas)`],
+    [`${nf(100 * B.tp.sarima / B.alerts, 1)} de 100`, `alertas de SARIMA son aciertos (línea base estática, ${nf(100 * B.tp.user / B.alerts, 1)}; regla global, ${nf(100 * B.tp.global / B.alerts, 1)})`],
+    [`${B.inc.sarima} de ${N}`, `incidentes cubiertos por SARIMA (línea base estática, ${B.inc.user}; regla global, ${B.inc.global})`],
+  ].map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
+  $("guia-budget").innerHTML = `<b>Cómo leer:</b> cada línea es un detector. El eje horizontal es cuántas alertas revisa el SOC cada día, de 1 a 30; el vertical, cuánto encuentra: a la izquierda, días maliciosos (de ${B.nMal}), y a la derecha, incidentes (de ${N}). Más arriba es mejor. Mire primero la línea punteada de ${B.k} alertas diarias: ahí SARIMA encuentra ${B.tp.sarima} días maliciosos; la línea base estática, ${B.tp.user}, y la regla global, ${B.tp.global}. En días maliciosos, los tres modelos de series de tiempo superan a la línea base estática con cualquier número de alertas. En incidentes, la ventaja está en las primeras alertas del día: desde 17 alertas diarias la línea base estática iguala a SARIMA, y con 21 lo supera por un incidente. No depende de unos pocos usuarios: al remuestrearlos 1.000 veces, la ventaja de SARIMA con ${B.k} alertas diarias quedó entre ${Math.round(B.dif.IC95_inf)} y ${Math.round(B.dif.IC95_sup)} días en el 95 % de los casos.`;
+  $("significa").innerHTML = [
+    `Con los mismos recursos, un modelo que conoce el ritmo de cada persona encuentra más: el analista revisa ${nf(B.alerts / B.tp.sarima, 1)} alertas por hallazgo en vez de ${nf(B.alerts / B.tp.user, 1)}, lo que ayuda a reducir la fatiga de alertas.`,
+    `El ritmo semanal importa, pero hay que aprenderlo: con ${B.k} alertas diarias, SARIMA, que lo estima con los datos, encuentra ${B.tp.sarima} días maliciosos; una regla que solo repite el mismo día de la semana anterior, ${B.tp.seasonal_naive}.`,
+    "Una alerta es una señal para investigar, no un ataque confirmado.",
+    "Los datos (CERT r4.2) son sintéticos: los resultados muestran viabilidad, no el desempeño en una organización real.",
+  ].map((x) => `<li>${x}</li>`).join("");
+  drawBudget();
+}
+
+function drawBudget() {
+  const B = budgetNumbers(), c = S.presupuesto_alertas.filter((r) => r.protocolo === "rolling"), tr = [];
+  for (const d of ["global", "user", "arima", "sarima", "sarimax"]) {
+    const x = c.filter((r) => r.detector === d).sort((a, b) => a.k - b.k);
+    for (const [ax, col] of [["", "dias_maliciosos_detectados"], ["2", "incidentes_detectados"]]) {
+      tr.push({ type: "scatter", mode: "lines", name: NAMES[d], legendgroup: d, showlegend: ax === "", xaxis: "x" + ax, yaxis: "y" + ax,
+        x: x.map((r) => r.k), y: x.map((r) => r[col]),
+        line: { color: COL[d], width: d === "sarima" ? 3.5 : 2, dash: ["global", "user", "sarima"].includes(d) ? "solid" : "dash" },
+        hovertemplate: "%{x} alertas por día: %{y}<extra>" + NAMES[d] + "</extra>" });
+    }
+  }
+  const ax = { gridcolor: GRID, linecolor: INK2, zeroline: false, title: "Alertas revisadas por día" };
+  const vline = (xr) => ({ type: "line", xref: xr, yref: "paper", x0: B.k, x1: B.k, y0: 0, y1: 1, line: { dash: "dot", color: INK2 } });
+  Plotly.newPlot("g-budget", tr, layout({
+    grid: { rows: 1, columns: 2, pattern: "independent" }, margin: { l: 55, r: 16, t: 40, b: 120 },
+    xaxis: Object.assign({ domain: [0, 0.46] }, ax), xaxis2: Object.assign({ domain: [0.54, 1], anchor: "y2" }, ax),
+    yaxis: { gridcolor: GRID, linecolor: INK2, zeroline: false, rangemode: "tozero" },
+    yaxis2: { gridcolor: GRID, linecolor: INK2, zeroline: false, rangemode: "tozero", anchor: "x2" },
+    legend: { orientation: "h", y: -0.3, yanchor: "top", x: 0.5, xanchor: "center" },
+    shapes: [vline("x"), vline("x2")],
+    annotations: [
+      { text: `Días maliciosos detectados (de ${B.nMal})`, xref: "paper", yref: "paper", x: 0.23, y: 1.02, xanchor: "center", yanchor: "bottom", showarrow: false, font: { size: 13, color: INK } },
+      { text: `Incidentes detectados (de ${S.ingesta.incidentes})`, xref: "paper", yref: "paper", x: 0.77, y: 1.02, xanchor: "center", yanchor: "bottom", showarrow: false, font: { size: 13, color: INK } }],
+  }), CFG);
+}
+
+// ------------------------------------------------------------------ resumen
+function resRow(p, d) { return S.deteccion_resumen.find((r) => r.protocolo === p && r.detector === d); }
+
+function renderSummary() {
+  const k = S.meta.budget_k, rule = `top${k}_dia`, r0 = S.deteccion_resumen[0], ing = S.ingesta, N = ing.incidentes;
+  const porEsc = [1, 2, 3].map((e) => S.incidentes.filter((r) => r.scenario === e).length);
+  $("kpis").innerHTML = [
+    [ing.usuarios.toLocaleString("es-CO"), "usuarios"], [ing.dias, "días de historia"],
+    [r0.usuario_dia_prueba.toLocaleString("es-CO"), "usuario-día evaluados"], [String(N), `incidentes (${porEsc[0]}, ${porEsc[1]} y ${porEsc[2]})`],
+    [pc(r0.prevalencia, 2), "prevalencia real en prueba"],
+  ].map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
+
+  const B = budgetNumbers(), bf = S.presupuesto_diferencias.find((r) => r.protocolo === "fixed" && r.detector === "sarima" && r.k === k);
+  const items = [
+    `<b>${pc(B.dif.mejora_relativa, 0)} más con el mismo trabajo.</b> Revisando ${k} alertas al día, SARIMA encuentra ${B.tp.sarima} días de actividad maliciosa; la línea base estática, ${B.tp.user}, y la regla global, ${B.tp.global}. No depende de unos pocos usuarios: al remuestrearlos 1.000 veces, la ventaja de SARIMA quedó entre ${Math.round(B.dif.IC95_inf)} y ${Math.round(B.dif.IC95_sup)} días en el 95 % de los casos.`,
+    `<b>Casi todos los incidentes.</b> Con esas mismas ${k} alertas diarias, SARIMA detecta ${B.inc.sarima} de los ${N} incidentes; la línea base estática, ${B.inc.user}, y la regla global, ${B.inc.global}.`,
+    `<b>Más aciertos por alerta.</b> Para dar con un día malicioso, el analista revisa ${nf(B.alerts / B.tp.sarima, 0)} alertas con SARIMA, ${nf(B.alerts / B.tp.user, 0)} con la línea base estática y ${nf(B.alerts / B.tp.global, 0)} con la regla global.`,
+    `<b>La línea base estática exige ${B.esfuerzo}.</b> Necesita ${B.kEq} alertas diarias para encontrar lo que SARIMA encuentra con ${k}.`,
+    `<b>Lo que no favorece al modelo, también se muestra.</b> Sin reentrenar los modelos (origen fijo), SARIMA sigue encontrando más días maliciosos (${bf ? bf.diferencia_dias : "n. d."} más con ${k} alertas diarias), pero en incidentes, con 6 a 11 alertas diarias, la línea base estática detecta más. Con reentrenamiento mensual nunca supera al mejor modelo de series de tiempo; a SARIMA solo lo supera por un incidente con 21 alertas diarias.`,
+    `<b>La ventaja viene del ritmo semanal.</b> Un control sin modelo, el perfil por día de la semana (también temporal), encuentra 210 días maliciosos y 67 incidentes con ${k} alertas diarias, muy por encima de la línea base estática; SARIMA encuentra ${B.tp.sarima}. Con 20 alertas diarias el perfil encuentra más (322 frente a 300). Detalle en la aplicación dinámica y en scripts/linea_base_semanal.py.`,
+    `<b>En una sola nota (PR-AUC, de 0 a 1).</b> SARIMA obtiene ${nf(resRow("rolling", "sarima").PR_AUC, 4)}, la línea base estática ${nf(resRow("rolling", "user").PR_AUC, 4)} y la regla global ${nf(resRow("rolling", "global").PR_AUC, 4)}; elegir al azar daría ${nf(r0.prevalencia, 4)}. ARIMA obtiene ${nf(resRow("rolling", "arima").PR_AUC, 4)}, pero su diferencia con SARIMA no es clara (el intervalo del 95 % incluye el cero).`];
+  $("findings").innerHTML = items.map((x) => `<li>${x}</li>`).join("");
+
+  drawPRAUC();
+  fillSelect($("pr-proto"), Object.entries(PROTO), "rolling");
+  $("pr-proto").onchange = drawPR; drawPR();
+
+  const rules = [[rule, `${k} alertas por día (cola de revisión)`], ["IP99_R1", "Límite del 99 % (1 contador)"], ["IP99_R2", "Límite del 99 % (2 contadores)"]];
+  for (const id of ["sc-rule", "al-rule"]) fillSelect($(id), rules, id === "al-rule" ? "IP99_R1" : rule);
+  for (const id of ["sc-proto", "al-proto"]) fillSelect($(id), Object.entries(PROTO), "rolling");
+  $("sc-rule").onchange = $("sc-proto").onchange = drawScen; drawScen();
+  $("al-rule").onchange = $("al-proto").onchange = drawDaily; drawDaily();
+
+  const abl = S.deteccion_resumen.map((r) => ({
+    p: PROTO[r.protocolo], d: NAMES[r.detector], ap: nf(r.PR_AUC, 4), ci: `${nf(r.PR_AUC_IC95_inf, 4)} a ${nf(r.PR_AUC_IC95_sup, 4)}`,
+    roc: nf(r.ROC_AUC), prec: nf(100 * r[rule + "_precision"], 1), rec: pc(r[rule + "_recall"]), inc: `${r[rule + "_incidentes_detectados"]}/${N}`,
+    fp1: nf(r.IP99_R1_FP_por_1000_ud, 1), rec1: pc(r.IP99_R1_recall), fp2: nf(r.IP99_R2_FP_por_1000_ud, 1), rec2: pc(r.IP99_R2_recall) }));
+  $("t-ablation").innerHTML = tableHTML(abl, [
+    { key: "p", label: "Protocolo" }, { key: "d", label: "Detector" }, { key: "ap", label: "PR-AUC" }, { key: "ci", label: "IC 95 %" },
+    { key: "roc", label: "ROC-AUC" }, { key: "prec", label: `Aciertos por cada 100 alertas (${k}/día)` }, { key: "rec", label: `Días maliciosos detectados (${k}/día)` },
+    { key: "inc", label: `Incidentes (${k}/día)` }, { key: "fp1", label: "Falsas alarmas por 1.000 usuario-día (límite 99 %)" }, { key: "rec1", label: "Días maliciosos detectados (límite 99 %)" },
+    { key: "fp2", label: "Falsas alarmas por 1.000 usuario-día (2 contadores)" }, { key: "rec2", label: "Días maliciosos detectados (2 contadores)" }]);
+  $("t-miss").innerHTML = tableHTML(S.lo_que_no_ven.map((r) => Object.assign({}, r, { p: PROTO[r.protocolo], d: NAMES[r.detector] })), [
+    { key: "p", label: "Protocolo" }, { key: "d", label: "Detector" }, { key: "detectados", label: "Detectados" },
+    { key: "detectados_por_estaticos", label: "Detectados por reglas estáticas (unión)" },
+    { key: "solo_temporal", label: "Solo los ve el modelo temporal" }, { key: "perdidos_vs_estaticos", label: "Los ven las reglas y no el modelo" },
+    { key: "incidentes_solo_temporal", label: "Incidentes", fmt: (v) => esc(String(v || "").replaceAll(";", ", ")) }]);
+}
+
+function drawPRAUC() {
+  const r0 = S.deteccion_resumen[0];
+  const traces = [["rolling", -0.17], ["fixed", 0.17]].map(([p, off]) => {
+    const rows = DET.map((d) => resRow(p, d));
+    return { type: "scatter", mode: "markers", name: PROTO[p], x: rows.map((r) => r.PR_AUC), y: DET.map((_, i) => i + off),
+      marker: { size: 12, symbol: p === "rolling" ? "circle" : "circle-open", color: DET.map((d) => COL[d]),
+        line: { width: 2, color: DET.map((d) => COL[d]) } },
+      error_x: { type: "data", symmetric: false, array: rows.map((r) => r.PR_AUC_IC95_sup - r.PR_AUC),
+        arrayminus: rows.map((r) => r.PR_AUC - r.PR_AUC_IC95_inf), color: INK2, thickness: 1.5, width: 0 },
+      text: DET.map((d) => NAMES[d]),
+      hovertemplate: "%{text}<br>PR-AUC %{x:.4f}<extra>" + PROTO[p] + "</extra>" };
+  });
+  Plotly.newPlot("g-prauc", traces, layout({ margin: { l: 150, r: 16, t: 56, b: 50 },
+    yaxis: { autorange: "reversed", tickvals: DET.map((_, i) => i), ticktext: DET.map((d) => NAMES[d]), showgrid: false },
+    xaxis: { title: "PR-AUC (nota de 0 a 1) con intervalo de confianza del 95 %", gridcolor: GRID, range: [0, 0.052] },
+    shapes: [{ type: "line", x0: r0.prevalencia, x1: r0.prevalencia, yref: "paper", y0: 0, y1: 1, line: { dash: "dot", color: INK2 } }],
+    annotations: [{ x: r0.prevalencia, y: 1, yref: "paper", text: "azar", showarrow: false, xanchor: "left", yanchor: "bottom", font: { size: 11, color: INK2 } }] }), CFG);
+}
+
+function drawPR() {
+  const p = $("pr-proto").value;
+  const tr = DET.map((d) => {
+    const c = S.curvas_pr.find((x) => x.protocolo === p && x.detector === d);
+    return { type: "scatter", mode: "lines", name: NAMES[d], x: c.recall, y: c.precision,
+      line: { color: COL[d], width: d === "sarima" ? 2.8 : 1.8 },
+      hovertemplate: "días maliciosos detectados %{x:.3f}<br>aciertos por alerta %{y:.3f}<extra>" + NAMES[d] + "</extra>" };
+  });
+  Plotly.newPlot("g-pr", tr, layout({ xaxis: { title: "Proporción de días maliciosos detectados", range: [0, 1], gridcolor: GRID },
+    yaxis: { title: "Aciertos por alerta (precisión)", rangemode: "tozero", gridcolor: GRID } }), CFG);
+}
+
+function drawScen() {
+  const rule = $("sc-rule").value, p = $("sc-proto").value;
+  const tr = DET.map((d) => {
+    const rows = [1, 2, 3].map((s) => S.deteccion_por_escenario.find((r) => r.protocolo === p && r.detector === d && r.regla === rule && r.escenario === s));
+    return { type: "bar", name: NAMES[d], x: [1, 2, 3].map((s) => `Esc. ${s}: ${SCEN[s]}`), y: rows.map((r) => r.incidentes_detectados),
+      customdata: rows.map((r) => r.incidentes), marker: { color: COL[d], line: { color: SURF, width: 2 } },
+      hovertemplate: "%{x}: %{y} de %{customdata}<extra>" + NAMES[d] + "</extra>" };
+  });
+  Plotly.newPlot("g-scen", tr, layout({ barmode: "group", yaxis: { title: "Incidentes detectados", gridcolor: GRID } }), CFG);
+}
+
+function drawDaily() {
+  const rule = $("al-rule").value, p = $("al-proto").value, days = S.alertas_diarias.days;
+  const tr = DET.map((d) => {
+    const y = S.alertas_diarias.series[`${p}|${d}|${rule}`] || [];
+    const sm = y.map((_, i) => { const w = y.slice(Math.max(0, i - 6), i + 1); return w.reduce((a, b) => a + b, 0) / w.length; });
+    return { type: "scatter", mode: "lines", name: NAMES[d], x: days, y: sm, line: { color: COL[d], width: 2 } };
+  });
+  Plotly.newPlot("g-daily", tr, layout({ hovermode: "x unified", yaxis: { title: "Alertas por día", gridcolor: GRID, rangemode: "tozero" } }), CFG);
+}
+
+// ------------------------------------------------------------------ explorador
+const cacheU = {};
+async function getUser(u) {
+  if (!cacheU[u]) cacheU[u] = await (await fetch(`data/users/${u}.json`)).json();
+  return cacheU[u];
+}
+
+function setupExplorer() {
+  const users = UIDX.users;
+  const u0 = users.some((u) => u.user === "IKR0401") ? "IKR0401" : users[0].user;   // el caso de la figura 1 del póster
+  fillSelect($("ex-user"), users.map((u) => [u.user, u.malicioso ? `${u.user} · cuenta con días maliciosos` : u.user]), u0);
+  fillSelect($("ex-signal"), Object.entries(SIG), "usb_events");
+  fillSelect($("ex-det"), [["sarima", NAMES.sarima], ["user", NAMES.user], ["sarimax", NAMES.sarimax]], "sarima");
+  for (const id of ["ex-user", "ex-signal", "ex-det"]) $(id).onchange = drawExplorer;
+  const q = new URLSearchParams(location.search);
+  if (q.get("user") && users.some((u) => u.user === q.get("user"))) $("ex-user").value = q.get("user");
+  if (q.get("signal") && SIG[q.get("signal")]) $("ex-signal").value = q.get("signal");
+}
+
+async function drawExplorer() {
+  const u = await getUser($("ex-user").value), s = $("ex-signal").value, det = $("ex-det").value;
+  const si = S.meta.signals.indexOf(s), days = UIDX.days;
+  const pr = u.pred[`rolling|${det}`];
+  const act = u.active, obs = u.counts[si].map((v, i) => (act[i] ? v : null));
+  const mu = pr.yhat[si].map((v, i) => (act[i] ? Math.expm1(v) : null));
+  const up = pr.yhat[si].map((v, i) => (act[i] ? Math.expm1(v + Z99 * pr.sigma[si][i]) : null));
+  const alert = obs.map((v, i) => (v !== null && up[i] !== null && v > up[i] && i >= S.meta.test_start_idx - u.t_from ? v : null));
+  const shapes = u.malicious.map((m, i) => m ? ({ type: "rect", xref: "x", yref: "paper", x0: shift(days[i], -12), x1: shift(days[i], 12), y0: 0, y1: 1,
+    fillcolor: MAL, line: { width: 0 }, layer: "below" }) : null).filter(Boolean);
+  const t0 = days[S.meta.test_start_idx - u.t_from];
+  shapes.push({ type: "line", x0: t0, x1: t0, yref: "paper", y0: 0, y1: 1, line: { dash: "dash", color: INK2 } });
+  const tr = [
+    { x: days, y: up, mode: "lines", line: { width: 0, shape: "hv" }, showlegend: false, hoverinfo: "skip" },
+    { x: days, y: act.map((a) => (a ? 0 : null)), mode: "lines", line: { width: 0, shape: "hv" }, fill: "tonexty", fillcolor: hexA(COL[det], 0.17),
+      name: `Límite 99 %: ${NAMES[det]}`, hoverinfo: "skip" },
+    { x: days, y: mu, mode: "lines", line: { color: COL[det], width: 2, shape: "hv" }, name: `Esperado: ${NAMES[det]}` },
+    { x: days, y: obs, mode: "lines+markers", line: { color: INK, width: 1.2, shape: "hv" }, marker: { size: 4 }, name: "Observado" },
+    { x: days, y: alert, mode: "markers", marker: { size: 13, symbol: "circle-open", color: RED, line: { width: 2.5 } }, name: "Alerta" },
+  ];
+  $("ex-title").textContent = `${u.user} · ${SIG[s]} · ${NAMES[det]} (reentrenamiento mensual, límite del 99 %)`;
+  const lastAct = days[act.lastIndexOf(1)] || days[days.length - 1];
+  const xr = [days[0], shift(lastAct, 24 * 10)];
+  Plotly.newPlot("g-ex", tr, layout({ shapes, xaxis: { range: xr, tickformat: "%d/%m/%Y", hoverformat: "%d/%m/%Y" }, yaxis: { title: SIG[s], rangemode: "tozero" }, hovermode: "x unified",
+    legend: { orientation: "h", y: 1.02, yanchor: "bottom", x: 0 } }), CFG).then(() => Plotly.Plots.resize("g-ex"));
+  const z = DET.map((d) => u.pred[`rolling|${d}`].A.map((v, i) => (act[i] ? v : null)));
+  Plotly.newPlot("g-heat", [{ type: "heatmap", z, x: days, y: DET.map((d) => NAMES[d]), zmin: 0, zmax: 8,
+    colorscale: [[0, HEAT[0]], [0.35, HEAT[1]], [0.7, HEAT[2]], [1, HEAT[3]]], colorbar: { title: "Puntaje" },
+    hovertemplate: "%{x|%d/%m/%Y}<br>%{y}: puntaje %{z:.2f}<extra></extra>" }],
+  layout({ margin: { l: 150, r: 16, t: 10, b: 40 }, yaxis: { autorange: "reversed" }, xaxis: { range: xr },
+    shapes: u.malicious.map((m, i) => m ? ({ type: "line", x0: days[i], x1: days[i], yref: "paper", y0: 0, y1: 1, line: { color: RED, width: 1 }, opacity: 0.6 }) : null).filter(Boolean) }), CFG)
+    .then(() => Plotly.Plots.resize("g-heat"));
+}
+function shift(day, h) { const d = new Date(day + "T00:00:00Z"); d.setUTCHours(d.getUTCHours() + h); return d.toISOString(); }
+function hexA(h, a) { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+
+// ------------------------------------------------------------------ incidentes
+function setupIncidents() {
+  const k = S.meta.budget_k;
+  fillSelect($("in-rule"), [[`top${k}_dia`, `${k} alertas por día (cola de revisión)`], ["IP99_R1", "Límite del 99 % (1 contador)"], ["IP99_R2", "Límite del 99 % (2 contadores)"]], `top${k}_dia`);
+  fillSelect($("in-proto"), Object.entries(PROTO), "rolling");
+  fillSelect($("in-scen"), [["0", "Todos"], ["1", "1. " + SCEN[1]], ["2", "2. " + SCEN[2]], ["3", "3. " + SCEN[3]]], "0");
+  for (const id of ["in-rule", "in-proto", "in-scen"]) $(id).onchange = drawIncidents;
+  drawIncidents();
+}
+
+function drawIncidents() {
+  const rule = $("in-rule").value, p = $("in-proto").value, sc = Number($("in-scen").value);
+  const det = S.incidentes_detalle.filter((r) => r.regla === rule && r.protocolo === p);
+  const rows = S.incidentes.filter((r) => !sc || r.scenario === sc).map((r) => {
+    const row = { inc: r.incident, sc: r.scenario, start: r.start.slice(0, 10), days: r.malicious_days, acc: r.accounts.replaceAll(";", ", ") };
+    for (const d of DET) {
+      const x = det.find((z) => z.incident === r.incident && z.detector === d);
+      row[d] = x && x.detectado ? `✓ (${x.demora_dias})` : "✗";
+    }
+    return row;
+  });
+  const cols = [{ key: "inc", label: "Incidente" }, { key: "sc", label: "Esc." }, { key: "start", label: "Inicio" },
+    { key: "days", label: "Días maliciosos" }, { key: "acc", label: "Cuentas" }]
+    .concat(DET.map((d) => ({ key: d, label: NAMES[d], cls: (v) => (String(v).startsWith("✓") ? "ok" : "") })));
+  $("t-inc").innerHTML = tableHTML(rows, cols, { rowClass: () => "link", rowData: (r) => r.inc });
+  $("in-summary").textContent = "Detectados: " + DET.map((d) => `${NAMES[d]} ${rows.filter((r) => r[d].startsWith("✓")).length}/${rows.length}`).join("; ") +
+    ". Entre paréntesis, días desde el primer día malicioso hasta la primera alerta. Haz clic en un incidente para ver su serie.";
+  $("t-inc").querySelectorAll("tr.link").forEach((tr) => {
+    const open = () => { const u = tr.dataset.key; if (UIDX.users.some((x) => x.user === u)) { $("ex-user").value = u; showTab("explorador"); } };
+    tr.onclick = open;
+    tr.onkeydown = (e) => { if (e.key === "Enter") open(); };
+  });
+}
+
+// ------------------------------------------------------------------ identificación y método
+function renderIdent() {
+  if (!S.identificacion_resumen) { $("t-ident").textContent = "Tabla de identificación no disponible."; return; }
+  const r = S.identificacion_resumen.map((x) => ({ s: SIG[x.signal], m: pc(x.pct_modelables), c: pc(x.pct_ciclo_semanal), a7: pc(x.pct_acf7_signif),
+    a1: pc(x.pct_acf1_signif), adf: pc(x.pct_adf_desest_rechaza), kp: pc(x.pct_kpss_no_rechaza) }));
+  $("t-ident").innerHTML = tableHTML(r, [{ key: "s", label: "Contador" }, { key: "m", label: "Series modelables" },
+    { key: "c", label: "Ciclo semanal (periodograma)" }, { key: "a7", label: "FAC(7) significativa" }, { key: "a1", label: "FAC(1) significativa" },
+    { key: "adf", label: "ADF rechaza raíz unitaria (desestacionalizada)" }, { key: "kp", label: "KPSS no rechaza estacionariedad" }]);
+  const o = S.meta.signals.map((s) => ({ s: SIG[s], ar: `(${S.ordenes.arima[s].order.join(",")})`,
+    sa: `(${S.ordenes.sarima[s].order.join(",")})(${S.ordenes.sarima[s].seasonal_order.slice(0, 3).join(",")})${S.ordenes.sarima[s].seasonal_order[3] || ""}` }));
+  $("t-orders").innerHTML = tableHTML(o, [{ key: "s", label: "Contador" }, { key: "ar", label: "ARIMA" }, { key: "sa", label: "SARIMA / SARIMAX" }]);
+}
+
+async function renderMethod() {
+  // En el Artifact el texto viene incluido en la página; en GitHub Pages se lee metodo.md.
+  const inline = document.getElementById("metodo-md");
+  const md = inline ? inline.textContent : await (await fetch("metodo.md")).text();
+  $("method").innerHTML = window.marked ? window.marked.parse(md) : `<pre>${esc(md)}</pre>`;
+}
+
+// ------------------------------------------------------------------ navegación
+const TABS = ["inicio", "resumen", "explorador", "incidentes", "identificacion", "metodo"];
+let current = "inicio";
+function showTab(t) {
+  if (!TABS.includes(t)) t = "inicio";
+  current = t;
+  document.querySelectorAll("#tabs button").forEach((b) => { b.classList.toggle("sel", b.dataset.tab === t); b.setAttribute("aria-selected", b.dataset.tab === t); });
+  document.querySelectorAll(".tab-panel").forEach((p) => (p.hidden = p.id !== `tab-${t}`));
+  try { history.replaceState(null, "", "#" + t); } catch (e) { /* sin historial en algunos visores */ }
+  if (t === "explorador") drawExplorer();
+  window.dispatchEvent(new Event("resize"));
+}
+
+// Al cambiar el tema (sistema o selector del visor) se vuelven a leer los tokens y a dibujar los gráficos.
+function redrawAll() {
+  readTheme();
+  for (const f of [drawBudget, drawPRAUC, drawPR, drawScen, drawDaily]) { try { f(); } catch (e) { console.error(e); } }
+  if (current === "explorador") drawExplorer();
+}
+function watchTheme() {
+  const mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  if (mq && mq.addEventListener) mq.addEventListener("change", redrawAll);
+  new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+}
+
+async function main() {
+  readTheme();
+  S = await (await fetch("data/summary.json")).json();
+  UIDX = await (await fetch("data/users_index.json")).json();
+  if (window.UEBA_DYNAMIC_APP_URL) $("app-link").innerHTML = `App dinámica con los 1.000 usuarios y el laboratorio de umbrales: <a href="${esc(window.UEBA_DYNAMIC_APP_URL)}">${esc(window.UEBA_DYNAMIC_APP_URL)}</a>`;
+  document.querySelectorAll("#tabs button").forEach((b) => (b.onclick = () => showTab(b.dataset.tab)));
+  for (const f of [renderInicio, renderSummary, setupExplorer, setupIncidents, renderIdent, renderMethod]) {
+    try { await f(); } catch (e) { console.error(e); }
+  }
+  watchTheme();
+  const q = new URLSearchParams(location.search);
+  const hash = (location.hash || "").replace("#", "");
+  showTab(TABS.includes(hash) ? hash : (q.get("tab") || "inicio"));
+}
+main().catch((e) => { document.querySelector("main").insertAdjacentHTML("afterbegin", `<div class="card">No se pudieron cargar los datos: ${esc(e.message)}</div>`); });
+
+</script>

@@ -1,0 +1,8 @@
+% PDF de entrega: páginas 1 a 3 del artículo (main.pdf) y el póster A0 como página 4.
+% Compilar primero main.tex y el póster (poster/poster_A0.pdf).
+\documentclass[a4paper]{article}
+\usepackage{pdfpages}
+\begin{document}
+\includepdf[pages=-]{main.pdf}
+\includepdf[pages=1]{../poster/poster_A0.pdf}
+\end{document}

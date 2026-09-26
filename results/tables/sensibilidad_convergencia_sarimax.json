@@ -1,0 +1,36 @@
+{
+  "usuarios": 40,
+  "maxiter": 300,
+  "refit_maxiter": 150,
+  "convergencia_con_mas_iteraciones": 0.6670538133952768,
+  "por_protocolo": {
+    "fixed": {
+      "dz_mediana": 0.0,
+      "dz_p95": 0.0,
+      "cambia_alerta_IP99": 0.0,
+      "corr_spearman_z": 0.9934
+    },
+    "rolling": {
+      "dz_mediana": 0.0,
+      "dz_p95": 0.0,
+      "cambia_alerta_IP99": 0.0,
+      "corr_spearman_z": 0.9857
+    }
+  },
+  "agregado": {
+    "fixed": {
+      "usuario_dia_senal": 66796,
+      "dz_mediana": 3.920743729679543e-08,
+      "dz_p95": 3.973236211152198e-07,
+      "dz_p99": 0.008140441500508189,
+      "pct_cambia_alerta_IP99": 0.0
+    },
+    "rolling": {
+      "usuario_dia_senal": 66598,
+      "dz_mediana": 4.150299359739762e-08,
+      "dz_p95": 0.004114612770910617,
+      "dz_p99": 0.049752268541497134,
+      "pct_cambia_alerta_IP99": 0.012012372743926244
+    }
+  }
+}

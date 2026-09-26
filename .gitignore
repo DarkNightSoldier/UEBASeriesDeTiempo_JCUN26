@@ -1,0 +1,40 @@
+# ---- Datos crudos y derivados pesados: se reconstruyen con el proceso (python -m ueba_ts all) ----
+# Los datos de CERT r4.2 no se incluyen: se descargan de KiltHub (Lindauer, 2020).
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/ingest_log.json
+data/interim/*
+!data/interim/.gitkeep
+# Pronósticos completos (≈ 480 MB); solo se conserva meta.json, que usan el póster y las figuras
+results/arrays/*
+!results/arrays/meta.json
+results/*.log
+results_smoke/
+
+# ---- Entornos y cachés ----
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.Rhistory
+.DS_Store
+
+# ---- LaTeX (se conservan los PDF finales) ----
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/build*.log
+paper/*.pdf.bak
+
+# ---- Temporales del control de calidad del póster ----
+poster/_*.html
+poster/assets/_*
+
+# ---- Póster (se mantiene fuera del repositorio) ----
+poster/
