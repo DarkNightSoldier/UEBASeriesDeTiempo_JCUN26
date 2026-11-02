@@ -123,3 +123,17 @@ body { margin: 0; background: var(--fondo); color: var(--tinta); font-family: La
 .repo:hover, .repo:focus-visible { background: var(--lima); color: var(--negro); }
 .foot-repo { display: block; margin-top: 6px; }
 .foot-repo a { color: inherit; font-weight: 700; overflow-wrap: anywhere; }
+
+/* Pestaña del póster: PDF incrustado en pantallas anchas; imagen que abre el PDF en el teléfono */
+.poster-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 14px; }
+.btn { background: var(--lima); color: var(--negro); border: 2px solid var(--lima); border-radius: 999px; padding: 6px 16px;
+  font-weight: 700; text-decoration: none; }
+.btn--sec { background: transparent; color: var(--verde-oscuro); }
+.btn:hover, .btn:focus-visible { background: var(--negro); border-color: var(--negro); color: #fff; }
+.poster-pdf { display: block; width: 100%; height: 88vh; border: 1px solid var(--linea); border-radius: 10px; }
+.poster-img { display: none; }
+.poster-img img { display: block; width: 100%; height: auto; border: 1px solid var(--linea); border-radius: 10px; }
+@media (max-width: 900px) {
+  .poster-pdf { display: none; }
+  .poster-img { display: block; }
+}

@@ -730,12 +730,32 @@ def tab_method():
     return card("Método, decisiones y fuentes", dcc.Markdown(METHOD_MD, link_target="_blank", className="md"))
 
 
+# ============================================================================ póster
+def tab_poster():
+    """Visor del póster: el PDF incrustado en pantallas anchas; en el teléfono, donde los navegadores no muestran
+    un PDF dentro de la página, una imagen que abre el PDF al tocarla."""
+    pdf = app.get_asset_url("PosterAlejandroHigueraJCUN.pdf")
+    return card("Póster presentado en la JCUN 2026",
+                html.P("Este es el póster que presenté en la 7.ª Jornada de Ciberseguridad de la Universidad Nacional "
+                       "de Colombia, del 20 al 24 de octubre de 2026. El PDF es vectorial, así que se puede ampliar "
+                       "sin perder nitidez.", className="lead"),
+                html.Div(className="poster-actions", children=[
+                    html.A("Abrir el PDF en pantalla completa ↗", href=pdf, target="_blank", rel="noopener",
+                           className="btn"),
+                    html.A("Descargar el PDF", href=pdf, download="PosterAlejandroHigueraJCUN.pdf",
+                           className="btn btn--sec")]),
+                html.Iframe(src=pdf + "#view=FitH", title="Póster en PDF", className="poster-pdf"),
+                html.A(html.Img(src=app.get_asset_url("poster_vista.jpg"), alt="Póster: " + TITLE),
+                       href=pdf, target="_blank", rel="noopener", className="poster-img"),
+                html.P("En el teléfono, toque el póster para abrir el PDF y ampliarlo.", className="note poster-img"))
+
+
 # ============================================================================ layout
 app = Dash(__name__, title="UEBA temporal · JCUN 2026", suppress_callback_exceptions=True,
            update_title=None, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
 
-TABS = [("inicio", "Inicio"), ("resumen", "Resultados"), ("laboratorio", "Laboratorio"),
+TABS = [("inicio", "Inicio"), ("poster", "Póster"), ("resumen", "Resultados"), ("laboratorio", "Laboratorio"),
         ("explorador", "Explorador de usuarios"), ("triage", "Cola de revisión diaria"), ("incidentes", "Incidentes"),
         ("identificacion", "Identificación Box-Jenkins"), ("metodo", "Método, glosario y fuentes")]
 
@@ -797,6 +817,8 @@ def render(tab, search):
         return tab_ident()
     if tab == "metodo":
         return tab_method()
+    if tab == "poster":
+        return tab_poster()
     if tab == "resumen":
         return tab_resumen()
     return tab_inicio()
