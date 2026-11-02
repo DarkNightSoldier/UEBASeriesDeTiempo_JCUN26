@@ -49,7 +49,7 @@ Periodo de prueba: 309.661 usuario-día activos, con 986 días maliciosos (0,32 
 | --- | --- | --- |
 | PDF para la convocatoria | [`paper/entrega_4_paginas.pdf`](paper/entrega_4_paginas.pdf) | 4 páginas: artículo en formato LNCS (páginas 1 a 3) y póster (página 4) |
 | Artículo | [`paper/main.pdf`](paper/main.pdf) | 3 páginas, Springer LNCS, A4 |
-| Póster A0 | [`poster/poster_A0.pdf`](poster/poster_A0.pdf) | 841 x 1189 mm, sobre la plantilla oficial JCUN 2026, completamente vectorial |
+| Póster A0 | [`poster/PosterAlejandroHigueraJCUN.pdf`](poster/PosterAlejandroHigueraJCUN.pdf) | 841 x 1189 mm, sobre la plantilla oficial JCUN 2026, completamente vectorial |
 | Contenido del póster | [`poster/contenido_poster.md`](poster/contenido_poster.md) | Texto de cada sección, glosario, tabla y referencias |
 | Aplicación dinámica | `app/` | Dash: todos los resultados, laboratorio y explorador de los 1.000 usuarios |
 | Sitio estático | `docs/` | Versión liviana para GitHub Pages |

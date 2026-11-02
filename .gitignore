@@ -36,5 +36,6 @@ paper/*.pdf.bak
 poster/_*.html
 poster/assets/_*
 
-# ---- Póster (se mantiene fuera del repositorio) ----
-poster/
+# ---- Póster (solo se publica el PDF final) ----
+poster/*
+!poster/PosterAlejandroHigueraJCUN.pdf
